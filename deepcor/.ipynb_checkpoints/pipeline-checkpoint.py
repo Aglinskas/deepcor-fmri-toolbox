@@ -32,8 +32,8 @@ class DeepCorDenoiser:
         learning_rate=0.001,
         n_repetitions=20,
         config=None,
-        device=None
-    ):
+        device=None,
+        verbose=True):
         """
         Initialize DeepCor denoiser.
 
@@ -58,11 +58,12 @@ class DeepCorDenoiser:
             self.config = config
 
         self.model_version = model_version
-        self.device = device or torch.device(
-            'cuda:0' if torch.cuda.is_available() else 'cpu'
-        )
+        self.device = device or torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
         self.models = []
         self.trainers = []
+
+        if verbose:
+            print(f'device is {self.device}')
 
     def fit_denoise(
         self,

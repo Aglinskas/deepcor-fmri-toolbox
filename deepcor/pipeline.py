@@ -32,8 +32,8 @@ class DeepCorDenoiser:
         learning_rate=0.001,
         n_repetitions=20,
         config=None,
-        device=None
-    ):
+        device=None,
+        verbose=True):
         """
         Initialize DeepCor denoiser.
 
