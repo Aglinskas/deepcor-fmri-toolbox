@@ -1,0 +1,24 @@
+# Core dependencies
+numpy>=1.19.0
+pandas>=1.1.0
+scipy>=1.5.0
+matplotlib>=3.3.0
+seaborn>=0.11.0
+
+# Deep learning
+torch>=1.9.0
+torchvision>=0.10.0
+
+# Neuroimaging
+antspyx>=0.3.0
+nilearn>=0.8.0
+
+# Scientific computing
+scikit-learn>=0.24.0
+
+# Progress bars and utilities
+tqdm>=4.60.0
+
+# Jupyter notebook support (optional)
+ipython>=7.20.0
+jupyter>=1.0.0
