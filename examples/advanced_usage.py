@@ -227,7 +227,6 @@ print("=" * 80)
 
 # Configure correlation and contrast analyses
 run_post_analyses = True
-
 if run_post_analyses:
     print("Configuring post-training analyses...")
 

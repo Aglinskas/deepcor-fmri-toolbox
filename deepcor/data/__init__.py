@@ -3,6 +3,7 @@
 from .datasets import TrainDataset
 from .preprocessing import (
     get_roi_and_roni,
+    get_obs_noi_list,
     get_obs_noi_list_coords,
     apply_dummy,
     censor_and_interpolate,
@@ -19,6 +20,7 @@ from .loaders import (
 __all__ = [
     'TrainDataset',
     'get_roi_and_roni',
+    'get_obs_noi_list',
     'get_obs_noi_list_coords',
     'apply_dummy',
     'censor_and_interpolate',

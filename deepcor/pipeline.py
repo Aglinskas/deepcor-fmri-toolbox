@@ -7,8 +7,8 @@ import torch
 import ants
 from tqdm import tqdm
 
-from .models import CVAE, get_model
-from .data import TrainDataset, get_obs_noi_list_coords, apply_dummy
+from .models import get_model
+from .data import TrainDataset, get_obs_noi_list, get_obs_noi_list_coords, apply_dummy
 from .training import Trainer, save_brain_signals
 from .analysis import average_signal_ensemble, calc_and_save_compcor
 from .config import DeepCorConfig, ModelConfig, TrainingConfig
@@ -117,12 +117,22 @@ class DeepCorDenoiser:
         # Get observation and noise lists
         if verbose:
             print("Preparing training data...")
-        obs_list_coords, noi_list_coords, gm, cf = get_obs_noi_list_coords(
-            epi, gm, cf
-        )
+        model_version = str(self.model_version).lower()
+        if model_version == "v1":
+            # CVAE v1: old-style voxel lists without coordinate channels
+            obs_list, noi_list, gm, cf = get_obs_noi_list(epi, gm, cf)
 
-        # Create dataset
-        train_dataset = TrainDataset(obs_list_coords, noi_list_coords)
+            # TrainDataset expects (N, C, T) tensors/arrays; v1 is (N, T)
+            obs_list = obs_list[:, np.newaxis, :]  # (N, 1, T)
+            noi_list = noi_list[:, np.newaxis, :]  # (N, 1, T)
+            train_dataset = TrainDataset(obs_list, noi_list)
+        else:
+            # CVAE v2 / latest: coordinate-augmented lists (4 channels)
+            obs_list_coords, noi_list_coords, gm, cf = get_obs_noi_list_coords(
+                epi, gm, cf
+            )
+            train_dataset = TrainDataset(obs_list_coords, noi_list_coords)
+
         train_loader = torch.utils.data.DataLoader(
             train_dataset,
             batch_size=self.config.training.batch_size,
@@ -147,21 +157,34 @@ class DeepCorDenoiser:
                 iterator.set_description(f"Training repetition {rep + 1}")
 
             try:
-                # Initialize model
-                model = CVAE(
-                    conf_batch,
-                    in_channels=4,
-                    in_dim=nTR,
-                    latent_dim=self.config.model.latent_dims,
-                    hidden_dims=self.config.model.hidden_dims,
-                    beta=self.config.model.beta,
-                    gamma=self.config.model.gamma,
-                    delta=self.config.model.delta,
-                    scale_MSE_GM=self.config.model.scale_MSE_GM,
-                    scale_MSE_CF=self.config.model.scale_MSE_CF,
-                    scale_MSE_FG=self.config.model.scale_MSE_FG,
-                    do_disentangle=self.config.model.do_disentangle
-                )
+                # Initialize model (supports v1/v2/latest via registry)
+                if model_version == "v1":
+                    latent_dim_v1 = self.config.model.latent_dims
+                    if isinstance(latent_dim_v1, (tuple, list)):
+                        latent_dim_v1 = int(latent_dim_v1[0])
+                    model = get_model(
+                        "v1",
+                        in_channels=1,
+                        in_dim=nTR,
+                        latent_dim=int(latent_dim_v1),
+                        hidden_dims=self.config.model.hidden_dims,
+                    )
+                else:
+                    model = get_model(
+                        str(self.model_version).lower(),
+                        conf=conf_batch,
+                        in_channels=4,
+                        in_dim=nTR,
+                        latent_dim=self.config.model.latent_dims,
+                        hidden_dims=self.config.model.hidden_dims,
+                        beta=self.config.model.beta,
+                        gamma=self.config.model.gamma,
+                        delta=self.config.model.delta,
+                        scale_MSE_GM=self.config.model.scale_MSE_GM,
+                        scale_MSE_CF=self.config.model.scale_MSE_CF,
+                        scale_MSE_FG=self.config.model.scale_MSE_FG,
+                        do_disentangle=self.config.model.do_disentangle,
+                    )
 
                 # Initialize trainer
                 trainer = Trainer(
@@ -212,10 +235,19 @@ class DeepCorDenoiser:
         if verbose:
             print("Saving comparison outputs...")
         from .data.loaders import array_to_brain
+        if model_version == "v1":
+            # v1 path: we built obs_list as (N, 1, T)
+            preproc_arr = obs_list[:, 0, :]
+        else:
+            # v2/latest path: we built obs_list_coords as (N, 4, T)
+            preproc_arr = obs_list_coords[:, 0, :]
+
         array_to_brain(
-            obs_list_coords[:, 0, :], epi, gm,
-            os.path.join(output_dir, 'preproc.nii.gz'),
-            inv_z_score=True
+            preproc_arr,
+            epi,
+            gm,
+            os.path.join(output_dir, "preproc.nii.gz"),
+            inv_z_score=True,
         )
 
         calc_and_save_compcor(

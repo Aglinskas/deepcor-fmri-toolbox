@@ -37,7 +37,11 @@ from deepcor import DeepCorDenoiser
 
 # Initialize denoiser
 denoiser = DeepCorDenoiser(
-    model_version='cvae',
+    # model_version:
+    # - 'v1': original CVAE implementation
+    # - 'v2': current CVAE implementation
+    # - 'latest': alias for the current recommended model (currently v2)
+    model_version='latest',
     latent_dims=(8, 8),
     n_epochs=100,
     batch_size=1024,

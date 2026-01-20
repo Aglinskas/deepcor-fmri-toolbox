@@ -165,6 +165,65 @@ def get_obs_noi_list_coords(epi, gm, cf):
     return obs_list_coords, noi_list_coords, gm, cf
 
 
+
+def get_obs_noi_list(epi, gm, cf):
+    """
+    Extract observation and noise voxel lists with coordinates.
+
+    Args:
+        epi: EPI image
+        gm: Gray matter mask
+        cf: Non-gray matter mask
+
+    Returns:
+        Tuple of (obs_list_coords, noi_list_coords, gm, cf)
+    """
+    nTR = epi.shape[-1]
+    epi_flat = epi.numpy().reshape(-1, nTR)
+    gm_flat = gm.numpy().flatten()
+    cf_flat = cf.numpy().flatten()
+
+    # Drop STD0 voxels from mask
+    std1 = epi_flat.std(axis=-1) > 1e-3
+    gm_flat = gm_flat * std1
+    cf_flat = cf_flat * std1
+
+    func_gm = epi_flat[gm_flat == 1, :].copy()
+    func_cf = epi_flat[cf_flat == 1, :].copy()
+
+    assert max(np.unique(cf_flat + gm_flat)) != 2, \
+        'ROI and RONI masks overlap'
+
+    obs_list = func_gm
+    noi_list = func_cf
+
+    # Z-score
+    obs_list = (obs_list - obs_list.mean(axis=1)[:, np.newaxis]) / obs_list.std(axis=1)[:, np.newaxis]
+    noi_list = (noi_list - noi_list.mean(axis=1)[:, np.newaxis]) / noi_list.std(axis=1)[:, np.newaxis]
+
+    print(f'obs_list.shape: {obs_list.shape}')
+    print(f'noi_list.shape: {noi_list.shape}')
+
+    # Upsample if needed
+    if obs_list.shape[0] > noi_list.shape[0]:
+        print('upsampling noi_list_coords')
+        n_pad = obs_list.shape[0] - noi_list.shape[0]
+        pad_idx = np.random.randint(
+            low=0,
+            high=noi_list.shape[0],
+            size=n_pad
+        )
+        noi_list = np.concatenate([noi_list,np.array([noi_list[i, :] for i in pad_idx]) ])
+
+    print(f'obs_list.shape: {obs_list.shape}')
+    print(f'noi_list.shape: {noi_list.shape}')
+
+    gm = gm.new_image_like(gm_flat.reshape(gm.shape))
+    cf = cf.new_image_like(cf_flat.reshape(gm.shape))
+
+    return obs_list, noi_list, gm, cf
+
+
 def apply_dummy(epi, df_conf, ndummy):
     """
     Apply dummy scan removal to EPI and confounds.
