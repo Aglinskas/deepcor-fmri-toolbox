@@ -1,12 +1,12 @@
 # DeepCor: Deep Learning-based Denoising for fMRI
 
-DeepCor is a Python package for denoising fMRI data using conditional variational autoencoders (cVAE). It provides both high-level and low-level APIs for flexible usage.
+DeepCor is a Python package for denoising fMRI data using contrastive variational autoencoders (CVAEs). It provides both high-level and low-level APIs for flexible usage.
 
 ## Features
 
-- **Deep learning-based denoising** using conditional VAE architecture
+- **Deep learning-based denoising** using Contrastive VAE architecture
 - **Disentangled representations** separating signal from noise
-- **Ensemble averaging** for robust denoising
+- **Ensemble averaging** for reliable denoising
 - **High-level API** for easy use (scikit-learn style)
 - **Low-level API** for research and customization
 - **Comprehensive analysis tools** for correlation and contrast analyses
@@ -137,10 +137,10 @@ deepcor/
 
 ### Models
 
-- **CVAE**: Conditional Variational Autoencoder with disentangled latent spaces
-  - `z`: Signal-related latent variables
-  - `s`: Noise-related latent variables
-- **Model Registry**: Easy access to different model versions
+- **CVAE**: Contrastive Variational Autoencoder with disentangled latent spaces
+  - `s`: Signal-related latent variables
+  - `z`: Noise-related latent variables
+- **Model Registry**: Access to different model versions
 
 ### Data Processing
 
@@ -206,14 +206,15 @@ MIT License - see LICENSE file for details
 
 ## Contributing
 
-Contributions are welcome! Please see CONTRIBUTING.md for guidelines.
+Contributions are very welcome! Fork, debug, experiment and submit a pull request!
 
 ## Support
 
 For issues and questions:
-- GitHub Issues: https://github.com/yourusername/deepcor-fmri-toolbox/issues
+- GitHub Issues: https://github.com/Aglinskas/deepcor-fmri-toolbox/issues
 - Documentation: https://deepcor.readthedocs.io (coming soon)
 
 ## Acknowledgments
 
-[Acknowledgments to be added] 
+Original CVAE implementation: Abid & Zou (2019) https://arxiv.org/abs/1902.04601
+Original DeepCor publication Zhu, Aglinskas & Anzellotti (2025) https://www.nature.com/articles/s41592-025-02967-x
