@@ -194,10 +194,10 @@ See the `examples/` directory for:
 
 ## Citation
 
-If you use DeepCor in your research, please cite:
+If you find DeepCor useful, please cite:
 
 ```
-[Citation information to be added]
+Zhu, Y., Aglinskas, A., & Anzellotti, S. (2025). DeepCor: denoising fMRI data with contrastive autoencoders. Nature Methods, 1-4.
 ```
 
 ## License
