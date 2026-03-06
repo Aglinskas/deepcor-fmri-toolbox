@@ -221,7 +221,7 @@ def get_obs_noi_list(epi, gm, cf):
     gm = gm.new_image_like(gm_flat.reshape(gm.shape))
     cf = cf.new_image_like(cf_flat.reshape(gm.shape))
 
-    return obs_list, noi_list, gm, cf
+    return obs_list[:,np.newaxis,:], noi_list[:,np.newaxis,:], gm, cf
 
 
 def apply_dummy(epi, df_conf, ndummy):

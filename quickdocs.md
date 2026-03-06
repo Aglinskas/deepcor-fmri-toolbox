@@ -1,0 +1,56 @@
+# DeepCor Toolbox Documentation
+
+deepcor/
+- `__init__.py` # Package entry point, exports main API components like DeepCorDenoiser and config classes.
+- `pipeline.py` # High-level API for end-to-end fMRI denoising.
+--- `DeepCorDenoiser` # Main class for fitting and applying the denoising model.
+- `config.py` # Configuration management using dataclasses.
+--- `DataConfig` # Settings for data preprocessing (dummy scans, confounds).
+--- `ModelConfig` # Hyperparameters for the CVAE architectures.
+--- `TrainingConfig` # Parameters for the optimization process (epochs, learning rate).
+--- `DeepCorConfig` # Root configuration object combining the above.
+- `utils.py` # General utility functions for the toolbox.
+--- `safe_mkdir` # Ensures directory existence without throwing errors.
+--- `check_gpu_and_speedup` # Diagnostic tool to check CUDA availability and performance.
+- `models/` # Architecture definitions for denoising models.
+-- `base.py` # Abstract base class defining the model interface.
+--- `BaseModel` # ABC for all DeepCor models (requires encode, decode, forward, etc.).
+-- `cvae.py` # Current implementation (V2) of the Conditional Variational Autoencoder.
+--- `GradientReversalFunction` # Autograd function for adversarial training.
+--- `GradientReversalLayer` # Module wrapper for gradient reversal.
+--- `compute_padding` # Helper to calculate convolutional padding based on TR count.
+--- `CVAE` # Main V2 model with confound conditioning and adversarial branches.
+-- `cvae_v1.py` # Original CVAE implementation (V1) as described in the paper.
+--- `CVAE_V1` # Legacy architecture (no confound decoder) optimized for simplicity.
+-- `registry.py` # Management system for model versioning.
+--- `get_model` # Factory function to retrieve model instances by version string ('v1', 'v2', 'latest').
+--- `list_models` # Returns a list of all registered model identifiers.
+- `data/` # Modules for data handling and fMRI-specific preprocessing.
+-- `datasets.py` # PyTorch dataset implementations.
+--- `TrainDataset` # Handles pairing of ROI and RONI voxels with optional augmentation.
+-- `preprocessing.py` # Functions for preparing raw fMRI data for the network.
+--- `get_roi_and_roni` # Segments brain data into target (signal) and noise regions.
+--- `get_obs_noi_list` # Extracts voxel time-series for V1 models.
+--- `get_obs_noi_list_coords` # Extracts voxels with 3D coordinates for v2 models.
+--- `apply_dummy` # Removes initial non-steady-state volumes.
+--- `censor_and_interpolate` # Handles motion scrubbing and data repair.
+-- `loaders.py` # High-level loading and saving utilities.
+--- `plot_timeseries` # Visualization helper for BOLD signals.
+--- `array_to_brain` # Maps denoised voxel arrays back into NIfTI volumes.
+- `training/` # Optimization and training loop logic.
+-- `trainer.py` # Core training implementation.
+--- `Trainer` # Handles the backpropagation loop, optimization, and checkpointing.
+--- `save_brain_signals` # Generates denoised volumes from a trained model.
+-- `callbacks.py` # Hooks for monitoring training.
+--- `EarlyStopping` # Monitors loss to prevent overfitting.
+- `analysis/` # Post-denoising validation and statistical tools.
+-- `correlations.py` # Tools for task-based correlation mapping.
+--- `run_correlation_analysis_from_spec` # Computes voxel-wise correlations with task regressors.
+-- `contrasts.py` # GLM-based contrast analysis.
+--- `run_contrast_analysis_from_spec` # Computes statistical contrasts (e.g., Task A > Task B).
+-- `metrics.py` # Denoising quality assessment.
+--- `calc_and_save_compcor` # Generates CompCor denoising for baseline comparison.
+- `visualization/` # Real-time monitoring and dashboards.
+-- `dashboard.py` # Training progress visualization.
+--- `init_track` # Initializes tracking dictionaries for metrics.
+--- `show_dashboard` # Displays a comprehensive multi-panel training dashboard.
