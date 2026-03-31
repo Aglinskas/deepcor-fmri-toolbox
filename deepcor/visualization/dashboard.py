@@ -45,6 +45,9 @@ def update_track(track, model, inputs_gm, inputs_cf):
 
     model.eval()
 
+    inputs_gm = inputs_gm.float()
+    inputs_cf = inputs_cf.float()
+
     [outputs_gm, inputs_gm, tg_mu_z, tg_log_var_z, tg_mu_s,
      tg_log_var_s, tg_z, tg_s] = model.forward_tg(inputs_gm)
     [outputs_cf, inputs_cf, bg_mu_z, bg_log_var_z] = model.forward_bg(inputs_cf)

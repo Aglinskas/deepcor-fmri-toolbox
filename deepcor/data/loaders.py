@@ -28,6 +28,7 @@ def plot_timeseries(epi, gm, cf):
     plt.title('EPI RONI timeseries')
     plt.ylabel('BOLD')
     plt.xlabel('timepoints')
+    plt.show()
 
 
 def array_to_brain(arr, epi, gm, ofn, inv_z_score=True, return_img=False):

@@ -233,7 +233,9 @@ class CVAE_V1(nn.Module):
         return {
             "loss": loss,
             "Reconstruction_Loss": recons_loss.detach(),
-            "KLD": kld_loss.detach(),
+            "kld_loss": kld_loss.detach(),
+            #"KLD": kld_loss.detach(),
+          
         }
 
     def sample(self, num_samples: int, current_device: int) -> Tensor:
