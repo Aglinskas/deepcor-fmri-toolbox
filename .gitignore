@@ -1,4 +1,5 @@
 /Data/*
+Archive/
 /tests/slurm-outputs/*
 /tests/papermill-outputs/*
 __pycache__/
