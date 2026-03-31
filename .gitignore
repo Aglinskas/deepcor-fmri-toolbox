@@ -1,8 +1,6 @@
 /Data/*
-.ipynb_checkpoints/
-*.ipynb_checkpoints/
-*.ipynb_checkpoints/*
-*/*/.ipynb_checkpoints/*
 /tests/slurm-outputs/*
 /tests/papermill-outputs/*
-*/__pycache__
+__pycache__/
+.ipynb_checkpoints/
+*.egg-info/

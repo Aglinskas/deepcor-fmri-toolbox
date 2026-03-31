@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/favicon.ico" />
+    <!-- Preload is necessary because we show these images when we disconnect from the server,
+    but at that point we cannot load these images from the server -->
+    <link rel="preload" crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/gradient-yHQUC_QB.png" as="image" />
+    <link rel="preload" crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/noise-60BoTA8O.png" as="image" />
+    <!-- Preload the fonts -->
+    <link rel="preload" crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/Lora-VariableFont_wght-B2ootaw-.ttf" as="font" crossorigin="anonymous" />
+    <link rel="preload" crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/PTSans-Regular-CxL0S8W7.ttf" as="font" crossorigin="anonymous" />
+    <link rel="preload" crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/PTSans-Bold-D9fedIX3.ttf" as="font" crossorigin="anonymous" />
+    <link rel="preload" crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/FiraMono-Regular-BTCkDNvf.ttf" as="font" crossorigin="anonymous" />
+    <link rel="preload" crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/FiraMono-Medium-DU3aDxX5.ttf" as="font" crossorigin="anonymous" />
+    <link rel="preload" crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/FiraMono-Bold-CLVRCuM9.ttf" as="font" crossorigin="anonymous" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="a marimo app" />
+    <link rel="apple-touch-icon" crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/apple-touch-icon.png" />
+    <link rel="manifest" crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/manifest.json" />
+
+    <script data-marimo="true">
+      function __resizeIframe(obj) {
+        const scrollbarHeight = 20; // Max between windows, mac, and linux
+
+        function setHeight() {
+          // Guard against race condition where iframe isn't ready
+          if (!obj.contentWindow?.document?.documentElement) {
+            return;
+          }
+          const element = obj.contentWindow.document.documentElement;
+          // If there is no vertical scrollbar, we don't need to resize the iframe
+          if (element.scrollHeight === element.clientHeight) {
+            return;
+          }
+
+          // Create a new height that includes the scrollbar height if it's visible
+          const hasHorizontalScrollbar = element.scrollWidth > element.clientWidth;
+          const newHeight = element.scrollHeight + (hasHorizontalScrollbar ? scrollbarHeight : 0);
+
+          // Only update the height if it's different from the current height
+          if (obj.style.height !== `${newHeight}px`) {
+            obj.style.height = `${newHeight}px`;
+          }
+        }
+
+        // Resize the iframe to the height of the content and bottom scrollbar height
+        setHeight();
+
+        // Resize the iframe when the content changes
+        const resizeObserver = new ResizeObserver((_entries) => {
+          setHeight();
+        });
+        // Only observe if iframe content is ready
+        if (obj.contentWindow?.document?.body) {
+          resizeObserver.observe(obj.contentWindow.document.body);
+        }
+      }
+    </script>
+    <marimo-filename hidden>02_StudyForrest_mo.py</marimo-filename>
+    <!-- TODO(Trevor): Legacy, required by VS Code plugin. Remove when plugin is updated (see marimo/server/_templates/template.py) -->
+    <marimo-version data-version="{{ version }}" hidden></marimo-version>
+    <marimo-user-config data-config="{{ user_config }}" hidden></marimo-user-config>
+    <marimo-server-token data-token="{{ server_token }}" hidden></marimo-server-token>
+    <!-- /TODO -->
+    <title>02 StudyForrest mo</title>
+    <script type="module" crossorigin crossorigin="anonymous" src="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/index-0n92c_W7.js"></script>
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/preload-helper-BW0IMuFq.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/clsx-BDxNtGmi.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/cn-BoaCR37F.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/chunk-LvLJmgfZ.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/react-Bj1aDYRI.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/compiler-runtime-B3qBwwSJ.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/jsx-runtime-icT_Ltz2.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/badge-hTpPIsMT.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/useEventListener-Dy81QR4n.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/button-Ej3vmCIF.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/react-dom-CSu739Rf.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/Combination-Cs9nbinQ.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/menu-items-UxKrm8hS.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/dist-DJBpXGro.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/createLucideIcon-Cm-Z7dYr.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/check-BE0hEwVo.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/x-BI1M8X_v.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/select-CxT2Geqr.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/tooltip-D9723Brr.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/use-toast-Hc8CXlvz.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/_Uint8Array-C0aUZfE0.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/_baseIsEqual-EYp9AUJI.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/useEvent-O0nX5vok.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/invariant-CQUIhlu2.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/isArrayLikeObject-Dx6-QZGQ.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/merge-CfcLlFFp.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/zod-H_cgTO0M.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/utils-tNbLd14P.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/Deferred-BMfCOLaw.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/uuid-ClFZlR7U.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/DeferredRequestRegistry-O6RDJKs0.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/constants-Rz_lD4HK.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/session-BrEm7qNv.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/config-3Aq84phF.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/requests-Bgjtqo_1.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/isSymbol-CiGN2w5X.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/toString-lmrYznmk.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/_baseSlice-39dTX4Wi.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/_hasUnicode-QS_pSfjY.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/assertNever-DWSyoPEi.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/_arrayReduce-BKEr35uH.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/useLifecycle-DA9DjSPo.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/useNonce-BtW-rR_1.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/useTheme-BYXBU1of.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/once-CJOnx12W.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/capabilities-D3x_db9Y.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/createReducer-Drh7NmIR.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/paths-D2lG83Oh.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/dist-B_cxg-E4.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/dist-D0Vj4Kqc.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/dist-CtXb4bUU.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/dist-CQqv2gQL.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/dist-8UD0A5sU.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/dist-CXLJUPFl.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/dist-BNC_tnlW.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/dist-apDpadc4.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/dist-CEeVCRd_.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/stex-0ac7Aukl.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/toDate-BqKH-Jd9.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/purify.es-BBn8CPhf.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/cjs-BU2qXMKx.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/toNumber-OnFQK5Wu.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/now-8AYn-wiF.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/debounce-DS_VtWMt.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/toInteger-CO3ppIfA.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/database-zap-DTWCDKdn.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/main-DrBRErTM.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/cells-fq1RMGX_.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/spinner-C5JoisA7.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/chevron-right-D0GQBpTb.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/dropdown-menu-DdPu5Kfu.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/kbd-DvKpAc6K.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/renderShortcut-CnD1Dah5.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/multi-map-Pp1P2DOX.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/alert-OQZHipbB.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/card-C-c-4jyF.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/alert-dialog-9WfvUF7e.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/dialog-CVN1lcMF.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/dist-BhNN2V5a.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/label-TNNaT1M9.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/useDebounce-B0dx2Gp0.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/azure-BTXHztTw.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/numbers-CYnquDho.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/SSRProvider-DC7ElCZZ.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/context-CIAP2NOh.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/useNumberFormatter-DbDKSvEd.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/usePress-BHGkpw8X.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/input-CUwqpKjd.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/links-DzgPOFJ-.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/popover-BPGG2gPG.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/switch-CVKxYu_0.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/table-BhH-Mm8O.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/mode-AcL8c6qH.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/useAsyncData-D-4ifFXh.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/errors-Bfogio62.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/error-banner-BRG6IPhC.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/copy-YwM0Pd7v.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/memoize-Bw1ifb7c.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/get-DBdMgUNq.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/capitalize-BfkXNxmI.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/copy-CkudG0Ej.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/plus-dVmh0yTy.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/refresh-cw-CHAHPgkx.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/trash-2-CAoNMkjq.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/triangle-alert-qZo1ox6x.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/ai-model-dropdown-DPTa_EpU.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/defaultLocale-OkOxlkkM.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/precisionRound-BOmLQIKI.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/defaultLocale-DK1MWd7f.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/vega-loader.browser-CZV6_g2i.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/utils-CdjCA1J8.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/ErrorBoundary-Ba0LbbH4.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/useInstallPackage-C9V-on2J.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/ImperativeModal-qEtcJ95s.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/cell-link-Q_UEP94Z.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/datasource-F9sJtuof.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/state-3V5UxC3B.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/MarimoErrorOutput-az74f3Mp.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/copy-icon-BgmMM9Zg.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/html-to-image-BnSc-Wa0.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/focus-DYwTiH9-.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/LazyAnyLanguageCodeMirror-m8w66E4s.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/chunk-5FQGJX7Z-CM1a_K7I.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/katex-rvFxOCU-.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/markdown-renderer-MR9df58W.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/command-rfxSsiHU.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/download-B9_ToVd4.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/useRunCells-5m6jCnyo.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/RenderHTML-DJ8khuob.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/useIframeCapabilities-DTN9kFDq.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/formats-rhOJovGE.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/en-US-BO8E69bZ.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/isValid-BGe7pJXT.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/dates-CHaNfieI.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/maps-OKerBHH8.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/extends-DRbCSry7.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/emotion-is-prop-valid.esm-D1keIaYa.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/useDateFormatter-CpE7XQLs.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/range-CJeRXUtp.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/table-BCnp9gKC.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/JsonOutput-DKXKGKvX.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/useDeleteCell-DRUDRiy0.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/icons-CrUXojcA.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/process-output-CTVsT--B.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/blob-CObhN-9g.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/objectWithoutPropertiesLoose-DP4vAkvg.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/esm-CBkHtTOV.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/file-DzHkbIdO.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/image-DXfkah9d.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/play-DKSqmedg.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/add-cell-with-ai-DUn4LN4W.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/isEmpty-CfmnKtgL.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/bot-message-square-CK6eoGWy.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/chat-display-D_Fuuy6r.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/chart-no-axes-column-DV8gdCvH.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/square-function-B006EYFX.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/spec-DbmSqx09.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/ellipsis-vertical-CAB7tdza.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/components-Bpgzv_5_.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/column-preview-WsubyItX.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/toggle-RCwU-rnE.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/globals-BsV5fVR-.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/share-BdH_5I58.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/_baseSet-D5BgdrnX.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/react-resizable-panels.browser.esm-DDRqG5ui.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/context-aware-panel-CfsfBlhO.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/floating-outline-BvQKiC0F.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/useAddCell-YC7rpcmD.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/eye-off-vwi9L975.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/readonly-python-code-DH-1xZGq.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/file-headphone-B5q2Ow55.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/file-icons-CWLHDa1J.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/refresh-ccw-DLpfIr8v.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/form-CrQYrsUC.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/field-B1jGbQlH.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/useBoolean-m1e6E3Ao.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/useDeepCompareMemoize-yyiB9aJX.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/types-C1RN112u.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/prop-types-RrUi-pOT.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/es-CzkousWe.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/hasIn-Bx4-SO9M.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/_baseFlatten-Be7p_si8.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/_basePickBy-Ck7z0-tq.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/pick-BYA9UDHe.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/code-xml-DwHPF_nL.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/download-DBW9RXtT.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/square-CxAsQQ77.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/settings-CzQUw9rV.js">
+    <link rel="modulepreload" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/bundle.esm-idScn0w0.js">
+    <link rel="stylesheet" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/cells-jmgGt1lS.css">
+    <link rel="stylesheet" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/markdown-renderer-DdDKmWlR.css">
+    <link rel="stylesheet" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/JsonOutput-B7vuddcd.css">
+    <link rel="stylesheet" crossorigin crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/@marimo-team/frontend@0.21.1/dist/assets/index-GjXovVsl.css">
+  
+<script data-marimo="true">
+    window.__MARIMO_STATIC__ = {};
+    window.__MARIMO_STATIC__.files = {};
+    window.__MARIMO_STATIC__.modelNotifications = [];
+</script>
+</head>
+  <body>
+    <div id="root"></div>
+    <!-- This is a portal for the data editor to render in -->
+    <div id="portal" data-testid="glide-portal" style="position: fixed; left: 0; top: 0; z-index: 9999"></div>
+    <script data-marimo="true">
+      window.__MARIMO_MOUNT_CONFIG__ = {
+            "filename": "02_StudyForrest_mo.py",
+            "cwd": "",
+            "mode": "read",
+            "version": "0.21.1",
+            "serverToken": "static",
+            "config": {"ai": {"custom_providers": {}, "models": {"custom_models": [], "displayed_models": []}}, "completion": {"activate_on_typing": true, "copilot": false, "signature_hint_on_typing": false}, "diagnostics": {"sql_linter": true}, "display": {"cell_output": "below", "code_editor_font_size": 14, "dataframes": "rich", "default_table_max_columns": 50, "default_table_page_size": 10, "default_width": "medium", "reference_highlighting": true, "theme": "light"}, "formatting": {"line_length": 79}, "keymap": {"overrides": {}, "preset": "default"}, "language_servers": {"pylsp": {"enable_flake8": false, "enable_mypy": true, "enable_pydocstyle": false, "enable_pyflakes": false, "enable_pylint": false, "enable_ruff": true, "enabled": false}}, "mcp": {"mcpServers": {}, "presets": []}, "package_management": {"manager": "pip"}, "runtime": {"auto_instantiate": false, "auto_reload": "off", "default_csv_encoding": "utf-8", "default_sql_output": "auto", "on_cell_change": "autorun", "output_max_bytes": 8000000, "reactive_tests": true, "std_stream_max_bytes": 1000000, "watcher_on_save": "lazy"}, "save": {"autosave": "after_delay", "autosave_delay": 1000, "format_on_save": false}, "server": {"browser": "default", "follow_symlink": false}, "snippets": {"custom_paths": [], "include_default_snippets": true}},
+            "configOverrides": {},
+            "appConfig": {"auto_download": ["ipynb", "html"], "sql_output": "auto", "width": "full"},
+            "view": {"showAppCode": true},
+            "notebook": {"cells": [{"code": "import os\nimport numpy as np\nimport pandas as pd\nimport torch\nimport ants\nfrom tqdm import tqdm\nimport matplotlib.pyplot as plt", "code_hash": "0a965a9d1bc069ccf29f1f25efd6b49c", "config": {"column": null, "disabled": false, "hide_code": false}, "id": "Hbol", "name": "_"}, {"code": "import marimo as mo", "code_hash": "1d0db38904205bec4d6f6f6a1f6cec3e", "config": {"column": null, "disabled": false, "hide_code": false}, "id": "MJUe", "name": "_"}, {"code": "# Import DeepCor configuration classes\nfrom deepcor.config import (\n    DeepCorConfig,\n    ModelConfig,\n    TrainingConfig,\n    DataConfig,\n)\n\n# Import models\nfrom deepcor.models import CVAE, cVAE, get_model, list_models\n\n# Import training utilities\nfrom deepcor.training import Trainer, save_model, save_brain_signals\n\n# Import data utilities\nfrom deepcor.data import (\n    TrainDataset,\n    get_roi_and_roni,\n    get_obs_noi_list_coords,\n    apply_dummy,\n    censor_and_interpolate,\n    apply_frame_censoring,\n    plot_timeseries,\n    array_to_brain,\n    load_pickle,\n    save_pickle,\n)\n\n# Import analysis utilities\nfrom deepcor.analysis import (\n    run_correlation_analysis_from_spec,\n    run_contrast_analysis_from_spec,\n    calc_and_save_compcor,\n    average_signal_ensemble,\n    get_design_matrix,\n)\n\n# Import visualization utilities\nfrom deepcor.visualization import (\n    init_track,\n    update_track,\n    show_dashboard,\n    save_track,\n)\n\n# Import general utilities\nfrom deepcor.utils import safe_mkdir, check_gpu_and_speedup\n\n# Import high-level API\nfrom deepcor.pipeline import DeepCorDenoiser", "code_hash": "1271c647c39e366a7395a7b464ef6c1a", "config": {"column": null, "disabled": false, "hide_code": false}, "id": "vblA", "name": "_"}, {"code": "check_gpu_and_speedup()", "code_hash": "a256963aaebf6c93abfb6e25fcbde90f", "config": {"column": null, "disabled": false, "hide_code": false}, "id": "bkHC", "name": "_"}, {"code": "print(\"=\" * 80)\nprint(\"EXAMPLE 2: Configuration Classes\")\nprint(\"=\" * 80)\n\n# Example 2a: Using individual config classes\nprint(\"\\n--- Individual Configuration Classes ---\")\n\n# ModelConfig: Configure the model architecture\nmodel_config = ModelConfig(\n    latent_dims=(8, 8),  # (shared dim, specific dim)\n    beta=0.01,           # KLD loss weight\n    gamma=0.0,           # TC loss weight\n    delta=0.0,           # RONI zero constraint weight\n    scale_MSE_GM=1e3,    # Gray matter reconstruction loss scale\n    scale_MSE_CF=1e3,    # Non-gray matter reconstruction loss scale\n    scale_MSE_FG=0.0,    # Foreground reconstruction loss scale\n    do_disentangle=True  # Enable disentanglement\n)\nprint(f\"ModelConfig: latent_dims={model_config.latent_dims}, beta={model_config.beta}\")\n\n# TrainingConfig: Configure training parameters\ntraining_config = TrainingConfig(\n    n_epochs=100,\n    batch_size=1024,\n    learning_rate=0.001,\n    optimizer='adamw',\n    betas=(0.9, 0.999),\n    eps=1e-08,\n    max_grad_norm=5.0,\n    n_repetitions=20  # Number of ensemble repetitions\n)\nprint(f\"TrainingConfig: n_epochs={training_config.n_epochs}, batch_size={training_config.batch_size}\")\n\n# DataConfig: Configure data preprocessing\ndata_config = DataConfig(\n    n_dummy_scans=0,\n    apply_censoring=False,\n    censoring_threshold=0.5,\n    confound_columns=['X', 'Y', 'Z', 'RotX', 'RotY', 'RotZ']\n)\n\n# Create a complete configuration\nconfig = DeepCorConfig(\n    model=model_config,\n    training=training_config,\n    data=data_config\n)", "code_hash": "5f58a7df31e972fe276149f227895682", "config": {"column": null, "disabled": false, "hide_code": false}, "id": "lEQa", "name": "_"}, {"code": "# ============================================================================\n# EXAMPLE 3: Data Loading and File Paths\n# ============================================================================\n\n# Define file paths (customize these for your data)\ns = 0\nr = 1\nsub = 'sub-01'\nindir = '../Data/fmriprep-forrest'\nanalysis_name = 'deepcor-advanced-example'\n\n# Input file paths\nepi_fn = os.path.join(\n    indir,\n    f'{sub}/ses-localizer/func/{sub}_ses-localizer_task-objectcategories_run-{r}_bold_space-MNI152NLin2009cAsym_preproc.nii.gz'\n)\ncf_fn = os.path.join(indir, 'mask_roni.nii')  # Non-gray matter mask\ngm_fn = os.path.join(indir, 'mask_roi.nii')   # Gray matter mask\nconf_fn = os.path.join(\n    indir,\n    f'{sub}/ses-localizer/func/{sub}_ses-localizer_task-objectcategories_run-{r}_bold_confounds.tsv'\n)\n\nprint(f\"Subject: {sub}\")\nprint(f\"Run: {r}\")\nprint(f\"EPI file: {epi_fn}\")\nprint(f\"Gray matter mask: {gm_fn}\")\nprint(f\"Non-gray matter mask: {cf_fn}\")\nprint(f\"Confounds file: {conf_fn}\")", "code_hash": "830b2545fd800d91dc7f5e80e84d5987", "config": {"column": null, "disabled": false, "hide_code": false}, "id": "PKri", "name": "_"}, {"code": "", "code_hash": null, "config": {"column": null, "disabled": false, "hide_code": false}, "id": "Xref", "name": "_"}, {"code": "", "code_hash": null, "config": {"column": null, "disabled": false, "hide_code": false}, "id": "SFPL", "name": "_"}, {"code": "", "code_hash": null, "config": {"column": null, "disabled": false, "hide_code": false}, "id": "BYtC", "name": "_"}], "metadata": {"marimo_version": "0.21.1"}, "version": "1"},
+            "session": {"cells": [{"code_hash": "0a965a9d1bc069ccf29f1f25efd6b49c", "console": [], "id": "Hbol", "outputs": [{"data": {"text/plain": ""}, "type": "data"}]}, {"code_hash": "1d0db38904205bec4d6f6f6a1f6cec3e", "console": [], "id": "MJUe", "outputs": [{"data": {"text/plain": ""}, "type": "data"}]}, {"code_hash": "1271c647c39e366a7395a7b464ef6c1a", "console": [], "id": "vblA", "outputs": [{"data": {"text/plain": ""}, "type": "data"}]}, {"code_hash": "a256963aaebf6c93abfb6e25fcbde90f", "console": [], "id": "bkHC", "outputs": [{"data": {"application/json": "{\"gpu_available\": true, \"gpu_name\": \"Tesla V100-SXM2-16GB\", \"cpu_time\": \"text/plain+float:0.009449529647827148\", \"gpu_time\": \"text/plain+float:0.00024667978286743166\", \"speedup\": \"text/plain+float:38.30686705649253\"}"}, "type": "data"}]}, {"code_hash": "5f58a7df31e972fe276149f227895682", "console": [{"mimetype": "text/plain", "name": "stdout", "text": "================================================================================\nEXAMPLE 2: Configuration Classes\n================================================================================\n\n--- Individual Configuration Classes ---\nModelConfig: latent_dims=(8, 8), beta=0.01\nTrainingConfig: n_epochs=100, batch_size=1024\n", "type": "stream"}], "id": "lEQa", "outputs": [{"data": {"text/plain": ""}, "type": "data"}]}, {"code_hash": "830b2545fd800d91dc7f5e80e84d5987", "console": [{"mimetype": "text/plain", "name": "stdout", "text": "Subject: sub-01\nRun: 1\nEPI file: ../Data/fmriprep-forrest/sub-01/ses-localizer/func/sub-01_ses-localizer_task-objectcategories_run-1_bold_space-MNI152NLin2009cAsym_preproc.nii.gz\nGray matter mask: ../Data/fmriprep-forrest/mask_roi.nii\nNon-gray matter mask: ../Data/fmriprep-forrest/mask_roni.nii\nConfounds file: ../Data/fmriprep-forrest/sub-01/ses-localizer/func/sub-01_ses-localizer_task-objectcategories_run-1_bold_confounds.tsv\n", "type": "stream"}], "id": "PKri", "outputs": [{"data": {"text/plain": ""}, "type": "data"}]}, {"code_hash": null, "console": [], "id": "Xref", "outputs": []}, {"code_hash": null, "console": [], "id": "SFPL", "outputs": []}, {"code_hash": null, "console": [], "id": "BYtC", "outputs": []}], "metadata": {"marimo_version": "0.21.1", "script_metadata_hash": null}, "version": "1"},
+            "runtimeConfig": null,
+        };
+    </script>
+  
+<marimo-code hidden="">
+    %23%20%2F%2F%2F%20script%0A%23%20requires-python%20%3D%20%22%3E%3D3.12%22%0A%23%20dependencies%20%3D%20%5B%0A%23%20%20%20%20%20%22marimo%3E%3D0.21.1%22%2C%0A%23%20%5D%0A%23%20%2F%2F%2F%0A%0Aimport%20marimo%0A%0A__generated_with%20%3D%20%220.21.1%22%0Aapp%20%3D%20marimo.App(width%3D%22full%22%2C%20auto_download%3D%5B%22ipynb%22%2C%20%22html%22%5D)%0A%0A%0A%40app.cell%0Adef%20_()%3A%0A%20%20%20%20import%20os%0A%20%20%20%20import%20numpy%20as%20np%0A%20%20%20%20import%20pandas%20as%20pd%0A%20%20%20%20import%20torch%0A%20%20%20%20import%20ants%0A%20%20%20%20from%20tqdm%20import%20tqdm%0A%20%20%20%20import%20matplotlib.pyplot%20as%20plt%0A%0A%20%20%20%20return%20(os%2C)%0A%0A%0A%40app.cell%0Adef%20_()%3A%0A%20%20%20%20import%20marimo%20as%20mo%0A%0A%20%20%20%20return%0A%0A%0A%40app.cell%0Adef%20_()%3A%0A%20%20%20%20%23%20Import%20DeepCor%20configuration%20classes%0A%20%20%20%20from%20deepcor.config%20import%20(%0A%20%20%20%20%20%20%20%20DeepCorConfig%2C%0A%20%20%20%20%20%20%20%20ModelConfig%2C%0A%20%20%20%20%20%20%20%20TrainingConfig%2C%0A%20%20%20%20%20%20%20%20DataConfig%2C%0A%20%20%20%20)%0A%0A%20%20%20%20%23%20Import%20models%0A%20%20%20%20from%20deepcor.models%20import%20CVAE%2C%20cVAE%2C%20get_model%2C%20list_models%0A%0A%20%20%20%20%23%20Import%20training%20utilities%0A%20%20%20%20from%20deepcor.training%20import%20Trainer%2C%20save_model%2C%20save_brain_signals%0A%0A%20%20%20%20%23%20Import%20data%20utilities%0A%20%20%20%20from%20deepcor.data%20import%20(%0A%20%20%20%20%20%20%20%20TrainDataset%2C%0A%20%20%20%20%20%20%20%20get_roi_and_roni%2C%0A%20%20%20%20%20%20%20%20get_obs_noi_list_coords%2C%0A%20%20%20%20%20%20%20%20apply_dummy%2C%0A%20%20%20%20%20%20%20%20censor_and_interpolate%2C%0A%20%20%20%20%20%20%20%20apply_frame_censoring%2C%0A%20%20%20%20%20%20%20%20plot_timeseries%2C%0A%20%20%20%20%20%20%20%20array_to_brain%2C%0A%20%20%20%20%20%20%20%20load_pickle%2C%0A%20%20%20%20%20%20%20%20save_pickle%2C%0A%20%20%20%20)%0A%0A%20%20%20%20%23%20Import%20analysis%20utilities%0A%20%20%20%20from%20deepcor.analysis%20import%20(%0A%20%20%20%20%20%20%20%20run_correlation_analysis_from_spec%2C%0A%20%20%20%20%20%20%20%20run_contrast_analysis_from_spec%2C%0A%20%20%20%20%20%20%20%20calc_and_save_compcor%2C%0A%20%20%20%20%20%20%20%20average_signal_ensemble%2C%0A%20%20%20%20%20%20%20%20get_design_matrix%2C%0A%20%20%20%20)%0A%0A%20%20%20%20%23%20Import%20visualization%20utilities%0A%20%20%20%20from%20deepcor.visualization%20import%20(%0A%20%20%20%20%20%20%20%20init_track%2C%0A%20%20%20%20%20%20%20%20update_track%2C%0A%20%20%20%20%20%20%20%20show_dashboard%2C%0A%20%20%20%20%20%20%20%20save_track%2C%0A%20%20%20%20)%0A%0A%20%20%20%20%23%20Import%20general%20utilities%0A%20%20%20%20from%20deepcor.utils%20import%20safe_mkdir%2C%20check_gpu_and_speedup%0A%0A%20%20%20%20%23%20Import%20high-level%20API%0A%20%20%20%20from%20deepcor.pipeline%20import%20DeepCorDenoiser%0A%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%20%20DataConfig%2C%0A%20%20%20%20%20%20%20%20DeepCorConfig%2C%0A%20%20%20%20%20%20%20%20ModelConfig%2C%0A%20%20%20%20%20%20%20%20TrainingConfig%2C%0A%20%20%20%20%20%20%20%20check_gpu_and_speedup%2C%0A%20%20%20%20)%0A%0A%0A%40app.cell%0Adef%20_(check_gpu_and_speedup)%3A%0A%20%20%20%20check_gpu_and_speedup()%0A%20%20%20%20return%0A%0A%0A%40app.cell%0Adef%20_(DataConfig%2C%20DeepCorConfig%2C%20ModelConfig%2C%20TrainingConfig)%3A%0A%20%20%20%20print(%22%3D%22%20*%2080)%0A%20%20%20%20print(%22EXAMPLE%202%3A%20Configuration%20Classes%22)%0A%20%20%20%20print(%22%3D%22%20*%2080)%0A%0A%20%20%20%20%23%20Example%202a%3A%20Using%20individual%20config%20classes%0A%20%20%20%20print(%22%5Cn---%20Individual%20Configuration%20Classes%20---%22)%0A%0A%20%20%20%20%23%20ModelConfig%3A%20Configure%20the%20model%20architecture%0A%20%20%20%20model_config%20%3D%20ModelConfig(%0A%20%20%20%20%20%20%20%20latent_dims%3D(8%2C%208)%2C%20%20%23%20(shared%20dim%2C%20specific%20dim)%0A%20%20%20%20%20%20%20%20beta%3D0.01%2C%20%20%20%20%20%20%20%20%20%20%20%23%20KLD%20loss%20weight%0A%20%20%20%20%20%20%20%20gamma%3D0.0%2C%20%20%20%20%20%20%20%20%20%20%20%23%20TC%20loss%20weight%0A%20%20%20%20%20%20%20%20delta%3D0.0%2C%20%20%20%20%20%20%20%20%20%20%20%23%20RONI%20zero%20constraint%20weight%0A%20%20%20%20%20%20%20%20scale_MSE_GM%3D1e3%2C%20%20%20%20%23%20Gray%20matter%20reconstruction%20loss%20scale%0A%20%20%20%20%20%20%20%20scale_MSE_CF%3D1e3%2C%20%20%20%20%23%20Non-gray%20matter%20reconstruction%20loss%20scale%0A%20%20%20%20%20%20%20%20scale_MSE_FG%3D0.0%2C%20%20%20%20%23%20Foreground%20reconstruction%20loss%20scale%0A%20%20%20%20%20%20%20%20do_disentangle%3DTrue%20%20%23%20Enable%20disentanglement%0A%20%20%20%20)%0A%20%20%20%20print(f%22ModelConfig%3A%20latent_dims%3D%7Bmodel_config.latent_dims%7D%2C%20beta%3D%7Bmodel_config.beta%7D%22)%0A%0A%20%20%20%20%23%20TrainingConfig%3A%20Configure%20training%20parameters%0A%20%20%20%20training_config%20%3D%20TrainingConfig(%0A%20%20%20%20%20%20%20%20n_epochs%3D100%2C%0A%20%20%20%20%20%20%20%20batch_size%3D1024%2C%0A%20%20%20%20%20%20%20%20learning_rate%3D0.001%2C%0A%20%20%20%20%20%20%20%20optimizer%3D'adamw'%2C%0A%20%20%20%20%20%20%20%20betas%3D(0.9%2C%200.999)%2C%0A%20%20%20%20%20%20%20%20eps%3D1e-08%2C%0A%20%20%20%20%20%20%20%20max_grad_norm%3D5.0%2C%0A%20%20%20%20%20%20%20%20n_repetitions%3D20%20%20%23%20Number%20of%20ensemble%20repetitions%0A%20%20%20%20)%0A%20%20%20%20print(f%22TrainingConfig%3A%20n_epochs%3D%7Btraining_config.n_epochs%7D%2C%20batch_size%3D%7Btraining_config.batch_size%7D%22)%0A%0A%20%20%20%20%23%20DataConfig%3A%20Configure%20data%20preprocessing%0A%20%20%20%20data_config%20%3D%20DataConfig(%0A%20%20%20%20%20%20%20%20n_dummy_scans%3D0%2C%0A%20%20%20%20%20%20%20%20apply_censoring%3DFalse%2C%0A%20%20%20%20%20%20%20%20censoring_threshold%3D0.5%2C%0A%20%20%20%20%20%20%20%20confound_columns%3D%5B'X'%2C%20'Y'%2C%20'Z'%2C%20'RotX'%2C%20'RotY'%2C%20'RotZ'%5D%0A%20%20%20%20)%0A%0A%20%20%20%20%23%20Create%20a%20complete%20configuration%0A%20%20%20%20config%20%3D%20DeepCorConfig(%0A%20%20%20%20%20%20%20%20model%3Dmodel_config%2C%0A%20%20%20%20%20%20%20%20training%3Dtraining_config%2C%0A%20%20%20%20%20%20%20%20data%3Ddata_config%0A%20%20%20%20)%0A%20%20%20%20return%0A%0A%0A%40app.cell%0Adef%20_(os)%3A%0A%20%20%20%20%23%20%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%0A%20%20%20%20%23%20EXAMPLE%203%3A%20Data%20Loading%20and%20File%20Paths%0A%20%20%20%20%23%20%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%3D%0A%0A%20%20%20%20%23%20Define%20file%20paths%20(customize%20these%20for%20your%20data)%0A%20%20%20%20s%20%3D%200%0A%20%20%20%20r%20%3D%201%0A%20%20%20%20sub%20%3D%20'sub-01'%0A%20%20%20%20indir%20%3D%20'..%2FData%2Ffmriprep-forrest'%0A%20%20%20%20analysis_name%20%3D%20'deepcor-advanced-example'%0A%0A%20%20%20%20%23%20Input%20file%20paths%0A%20%20%20%20epi_fn%20%3D%20os.path.join(%0A%20%20%20%20%20%20%20%20indir%2C%0A%20%20%20%20%20%20%20%20f'%7Bsub%7D%2Fses-localizer%2Ffunc%2F%7Bsub%7D_ses-localizer_task-objectcategories_run-%7Br%7D_bold_space-MNI152NLin2009cAsym_preproc.nii.gz'%0A%20%20%20%20)%0A%20%20%20%20cf_fn%20%3D%20os.path.join(indir%2C%20'mask_roni.nii')%20%20%23%20Non-gray%20matter%20mask%0A%20%20%20%20gm_fn%20%3D%20os.path.join(indir%2C%20'mask_roi.nii')%20%20%20%23%20Gray%20matter%20mask%0A%20%20%20%20conf_fn%20%3D%20os.path.join(indir%2C%0A%20%20%20%20%20%20%20%20f'%7Bsub%7D%2Fses-localizer%2Ffunc%2F%7Bsub%7D_ses-localizer_task-objectcategories_run-%7Br%7D_bold_confounds.tsv'%0A%20%20%20%20)%0A%0A%20%20%20%20print(f%22Subject%3A%20%7Bsub%7D%22)%0A%20%20%20%20print(f%22Run%3A%20%7Br%7D%22)%0A%20%20%20%20print(f%22EPI%20file%3A%20%7Bepi_fn%7D%22)%0A%20%20%20%20print(f%22Gray%20matter%20mask%3A%20%7Bgm_fn%7D%22)%0A%20%20%20%20print(f%22Non-gray%20matter%20mask%3A%20%7Bcf_fn%7D%22)%0A%20%20%20%20print(f%22Confounds%20file%3A%20%7Bconf_fn%7D%22)%0A%20%20%20%20return%0A%0A%0A%40app.cell%0Adef%20_()%3A%0A%20%20%20%20return%0A%0A%0A%40app.cell%0Adef%20_()%3A%0A%20%20%20%20return%0A%0A%0A%40app.cell%0Adef%20_()%3A%0A%20%20%20%20return%0A%0A%0Aif%20__name__%20%3D%3D%20%22__main__%22%3A%0A%20%20%20%20app.run()%0A
+</marimo-code>
+
+<marimo-code-hash hidden="">792280e366cb57197c259ca84e888060</marimo-code-hash>
+</body>
+</html>

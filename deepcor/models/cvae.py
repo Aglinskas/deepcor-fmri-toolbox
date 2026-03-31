@@ -81,12 +81,13 @@ def compute_padding(x):
 
 class CVAE(BaseModel):
     """
-    Conditional Variational Autoencoder for fMRI denoising.
+    Contrastive Variational Autoencoder for fMRI denoising.
 
     This model learns to separate signal from noise in fMRI data using
     a disentangled latent representation with two components:
-    - z: Signal-related latent variables
-    - s: Noise-related latent variables
+    - s: Signal-related latent variables
+    - z: Noise-related latent variables
+    
     """
 
     def __init__(
