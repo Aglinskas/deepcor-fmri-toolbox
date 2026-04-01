@@ -21,14 +21,14 @@ def _():
     from tqdm import tqdm
     import matplotlib.pyplot as plt
 
-    return ants, os, pd, torch
+    return ants, os, pd, plt, torch
 
 
 @app.cell
 def _(os):
     import marimo as mo
     os.chdir(mo.notebook_dir()) #Jupyterlab-like, change path to where the notebook is, all paths relative to this
-    return
+    return (mo,)
 
 
 @app.cell
@@ -230,7 +230,24 @@ def _(deepcor, obs_list, torch):
 
 
 @app.cell
-def _(config, deepcor, device, model, os, output_dir, torch, train_loader):
+def _(config):
+    config.training.n_epochs = 10
+    return
+
+
+@app.cell
+def _(
+    config,
+    deepcor,
+    device,
+    fig,
+    mo,
+    model,
+    os,
+    output_dir,
+    plt,
+    train_loader,
+):
     # Initialize Trainer
     trainer = deepcor.training.Trainer(
         model,
@@ -246,14 +263,8 @@ def _(config, deepcor, device, model, os, output_dir, torch, train_loader):
     # Train the model
     print(f"Starting training for {config.training.n_epochs} epochs...")
     # We use a simple tracking dict for visualization
-    keys = [
-        'l', 'kld_loss', 'recons_loss_roi', 'recons_loss_roni',
-        'loss_recon_conf_s', 'loss_recon_conf_z', 'ncc_loss_tg',
-        'ncc_loss_bg', 'ncc_loss_conf_s', 'ncc_loss_conf_z',
-        'smoothness_loss', 'recons_loss_fg'
-    ]
 
-    track = deepcor.visualization.init_track(keys)
+    track = deepcor.visualization.init_track('V1')
 
     # Training loop
     loss_history = []
@@ -262,18 +273,27 @@ def _(config, deepcor, device, model, os, output_dir, torch, train_loader):
         avg_loss = trainer.train_epoch(train_loader)
         loss_history.append(avg_loss)
 
-        # Update tracking (using a batch from loader for viz)
-        with torch.no_grad():
-            # Get a sample batch
-            sample_batch = next(iter(train_loader))
-            inputs_gm = sample_batch[0].to(device)
-            inputs_cf = sample_batch[1].to(device)
 
-            # Update track
-            track = deepcor.visualization.update_track(track, model, inputs_gm, inputs_cf)
+        deepcor.visualization.update_track(track,train_loader,model)
+        # Update tracking (using a batch from loader for viz)
+        # with torch.no_grad():
+        #     # Get a sample batch
+        #     sample_batch = next(iter(train_loader))
+        #     inputs_gm = sample_batch[0].to(device)
+        #     inputs_cf = sample_batch[1].to(device)
+
+        #     # Update track
+        #     track = deepcor.visualization.update_track(track, model, inputs_gm, inputs_cf)
+
+
+
 
         if (epoch + 1) % 10 == 0 or epoch == 0:
             print(f"Epoch {epoch+1}/{config.training.n_epochs}, Loss: {avg_loss:.4f}")
+
+        deepcor.visualization.show_dahsboard_v1_marimo(track)
+        mo.output.replace(fig)   # replace previous plot with the new one
+        plt.close(fig)           # avoid duplicate/static matplotlib display
 
     # Save outputs
     print("Saving model and results...")
@@ -289,12 +309,60 @@ def _(config, deepcor, device, model, os, output_dir, torch, train_loader):
     return
 
 
-app._unparsable_cell(
-    r"""
-    model.
-    """,
-    name="_"
-)
+@app.cell
+def _(deepcor):
+    deepcor.visualization.save_track
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _():
+    return
 
 
 @app.cell
