@@ -7,7 +7,7 @@
 
 import marimo
 
-__generated_with = "0.21.1"
+__generated_with = "0.23.8"
 app = marimo.App(width="full", auto_download=["ipynb", "html"])
 
 
@@ -18,10 +18,10 @@ def _():
     import pandas as pd
     import torch
     import ants
-    from tqdm import tqdm
+    from tqdm.auto import tqdm
     import matplotlib.pyplot as plt
 
-    return ants, os, pd, plt, torch
+    return ants, os, pd, torch
 
 
 @app.cell
@@ -45,17 +45,9 @@ def _():
 
 
 @app.cell
-def _():
-    # import gc
-    # gc.collect()
-    # torch.cuda.empty_cache()
-    return
-
-
-@app.cell
 def _(deepcor):
     # ModelConfig: Configure the model architecture
-    model_config = deepcor.config.ModelConfig(
+    model_config = deepcor.ModelConfig(
         latent_dims=(8, 8),  # (shared dim, specific dim)
         beta=0.01,           # KLD loss weight
         gamma=0.0,           # TC loss weight
@@ -68,7 +60,7 @@ def _(deepcor):
 
 
     # TrainingConfig: Configure training parameters
-    training_config = deepcor.config.TrainingConfig(
+    training_config = deepcor.TrainingConfig(
         n_epochs=100,
         batch_size=256,
         learning_rate=0.001,
@@ -81,15 +73,15 @@ def _(deepcor):
 
 
     # DataConfig: Configure data preprocessing
-    data_config = deepcor.config.DataConfig(
+    data_config = deepcor.DataConfig(
         n_dummy_scans=0,
         apply_censoring=False,
-        censoring_threshold=0.5,
+        censoring_threshold=0.0,
         confound_columns=['X', 'Y', 'Z', 'RotX', 'RotY', 'RotZ']
     )
 
     # Create a complete configuration
-    config = deepcor.config.DeepCorConfig(
+    config = deepcor.DeepCorConfig(
         model=model_config,
         training=training_config,
         data=data_config
@@ -135,7 +127,17 @@ def _(analysis_name, r, s, subs):
 
 
 @app.cell
-def _(analysis_name, bids_path, os, run, session, space, sub_id, task):
+def _(
+    analysis_name,
+    bids_path,
+    deepcor,
+    os,
+    run,
+    session,
+    space,
+    sub_id,
+    task,
+):
     base = os.path.join(bids_path,sub_id,session)
 
     # EPI
@@ -154,6 +156,7 @@ def _(analysis_name, bids_path, os, run, session, space, sub_id, task):
 
     os.makedirs(os.path.join('../Data/DeepCor-Outputs',analysis_name), exist_ok=True)
     output_dir = os.path.join('../Data/DeepCor-Outputs',analysis_name,f'DeepCor-Forrest-{sub_id}-{task}-{run}-cvae_v1')
+    deepcor.utils.io.safe_mkdir(output_dir)
 
     print("EPI:", epi_path)
     print("Confounds:", confounds_path)
@@ -168,17 +171,8 @@ def _(ants, cf_mask_path, confounds_path, deepcor, epi_path, gm_mask_path, pd):
     gm = ants.image_read(gm_mask_path)
     cf = ants.image_read(cf_mask_path)
 
-    # Apply Dummy Scans
-    do_dummy = False
-    if do_dummy:
-        ndummy = 8
-        epi, df_conf = deepcor.data.apply_dummy(epi, df_conf, ndummy=ndummy)
-
-    do_frame_censoring = False
-    if do_frame_censoring:
-        idx_censor = df_conf['FramewiseDisplacement'].values>0.01
-        epi, df_conf = deepcor.data.apply_frame_censoring(epi,df_conf,idx_censor,also_nearby_voxels=True)
-    return cf, df_conf, epi, gm
+    obs_list, noi_list, gm, cf = deepcor.data.get_obs_noi_list(epi, gm, cf)
+    return cf, epi, gm, noi_list, obs_list
 
 
 @app.cell
@@ -188,19 +182,7 @@ def _(cf, deepcor, epi, gm):
 
 
 @app.cell
-def _(cf, deepcor, epi, gm):
-    obs_list, noi_list, gm2, cf2 = deepcor.data.get_obs_noi_list(epi, gm, cf)
-    return noi_list, obs_list
-
-
-@app.cell
 def _():
-    return
-
-
-@app.cell
-def _(df_conf):
-    df_conf[['X','Y','Z','RotX','RotY','RotZ']]
     return
 
 
@@ -236,18 +218,7 @@ def _(config):
 
 
 @app.cell
-def _(
-    config,
-    deepcor,
-    device,
-    fig,
-    mo,
-    model,
-    os,
-    output_dir,
-    plt,
-    train_loader,
-):
+def _(config, deepcor, device, model):
     # Initialize Trainer
     trainer = deepcor.training.Trainer(
         model,
@@ -259,59 +230,38 @@ def _(
         max_grad_norm=config.training.max_grad_norm
     )
     print("Trainer initialized")
-
-    # Train the model
-    print(f"Starting training for {config.training.n_epochs} epochs...")
-    # We use a simple tracking dict for visualization
-
-    track = deepcor.visualization.init_track('V1')
-
-    # Training loop
-    loss_history = []
-    for epoch in range(config.training.n_epochs):
-        # Train one epoch
-        avg_loss = trainer.train_epoch(train_loader)
-        loss_history.append(avg_loss)
-
-
-        deepcor.visualization.update_track(track,train_loader,model)
-        # Update tracking (using a batch from loader for viz)
-        # with torch.no_grad():
-        #     # Get a sample batch
-        #     sample_batch = next(iter(train_loader))
-        #     inputs_gm = sample_batch[0].to(device)
-        #     inputs_cf = sample_batch[1].to(device)
-
-        #     # Update track
-        #     track = deepcor.visualization.update_track(track, model, inputs_gm, inputs_cf)
-
-
-
-
-        if (epoch + 1) % 10 == 0 or epoch == 0:
-            print(f"Epoch {epoch+1}/{config.training.n_epochs}, Loss: {avg_loss:.4f}")
-
-        deepcor.visualization.show_dahsboard_v1_marimo(track)
-        mo.output.replace(fig)   # replace previous plot with the new one
-        plt.close(fig)           # avoid duplicate/static matplotlib display
-
-    # Save outputs
-    print("Saving model and results...")
-    # Save checkpoint
-    trainer.save_checkpoint(
-        os.path.join(output_dir, 'model_final.pt'), 
-        config.training.n_epochs, 
-        avg_loss
-    )
-
-    # Save track
-    deepcor.visualization.save_track(os.path.join(output_dir, 'track.pickle'), track)
-    return
+    return (trainer,)
 
 
 @app.cell
-def _(deepcor):
-    deepcor.visualization.save_track
+def _(config, deepcor, mo, model, os, output_dir, train_loader, trainer):
+    n_ensebles = 1
+    for ensemble in mo.status.progress_bar(range(n_ensebles),title='Outer Loop',completion_title='All Ensembles Trained', show_eta=True):
+        track = deepcor.visualization.init_track('V1')
+        loss_history = []
+        for epoch in mo.status.progress_bar(range(config.training.n_epochs),show_eta=True,title='Inner Loop',remove_on_exit=False):
+            # Train one epoch
+            avg_loss = trainer.train_epoch(train_loader)
+            loss_history.append(avg_loss)
+
+            deepcor.visualization.update_track(track,train_loader,model)
+            track['loss'] = loss_history
+
+            fig = deepcor.visualization.show_dahsboard_v1_marimo(track)
+            #mo.output.replace(fig)   # replace previous plot with the new one
+            mo.output.replace_at_index(fig,2)
+            #plt.close(fig)           # avoid duplicate/static matplotlib display
+
+        # Save outputs
+        #print("Saving model and results...")
+        # Save checkpoint
+        trainer.save_checkpoint(
+            os.path.join(output_dir, f'model_final_ens{ensemble}.pt'), 
+            config.training.n_epochs, 
+            avg_loss)
+
+        # Save track
+        deepcor.visualization.save_track(os.path.join(output_dir, f'track_ens{ensemble}.pickle'), track)
     return
 
 

@@ -1,4 +1,4 @@
-"""Conditional Variational Autoencoder (cVAE) model for fMRI denoising."""
+"""Contrastive Variational Autoencoder (cVAE) model for fMRI denoising."""
 
 import math
 import numpy as np
@@ -142,7 +142,14 @@ class CVAE(BaseModel):
         self.freq_exp = freq_exp
         self.freq_scale = freq_scale
         self.scale_MSE_FG = scale_MSE_FG
-        self.confounds = conf.float()
+        # Confounds are stored as a buffer so they move with the model
+        # (.to(device), .cuda(), etc.). The loss function indexes them as
+        # (batch, n_confounds, time); a 2D (n_confounds, time) tensor is
+        # promoted to a leading batch axis of 1.
+        conf = conf.float()
+        if conf.dim() == 2:
+            conf = conf.unsqueeze(0)
+        self.register_buffer('confounds', conf)
         self.grl = GradientReversalLayer(lambda_=1.0)
 
         nTR = in_dim
@@ -526,6 +533,7 @@ class CVAE(BaseModel):
         return {
             'loss': loss,
             'kld_loss': kld_loss,
+            'Reconstruction_Loss': recons_loss.detach(),
             'recons_loss_roi': recons_loss_roi,
             'recons_loss_roni': recons_loss_roni,
             'loss_recon_conf_s': loss_recon_conf_s,

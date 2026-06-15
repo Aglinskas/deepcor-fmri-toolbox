@@ -25,12 +25,14 @@ class CVAE_V1(nn.Module):
         in_dim: int,
         latent_dim: int,
         hidden_dims: Optional[List[int]] = None,
+        beta: float = 1e-5,
     ) -> None:
         super().__init__()
-
+      
         self.latent_dim = latent_dim
         self.in_channels = in_channels
         self.in_dim = in_dim
+        self.beta = beta
 
         if hidden_dims is None:
             hidden_dims = [64, 128, 256, 256]
@@ -190,21 +192,21 @@ class CVAE_V1(nn.Module):
         zeros = torch.zeros_like(bg_z)
         output = self.decode(torch.cat((bg_z, zeros), dim=1))
         return [output, input, bg_mu_z, bg_log_var_z]
-
+      
     def forward_fg(self, input: Tensor) -> List[Tensor]:
         """Forward pass for foreground (signal) data."""
-        fg_mu_z, fg_log_var_z = self.encode_z(input)
-        fg_z = self.reparameterize(fg_mu_z, fg_log_var_z)
-        zeros = torch.zeros_like(fg_z)
-        output = self.decode(torch.cat((fg_z, zeros), dim=1))
-        return [output, input, fg_mu_z, fg_log_var_z]
+        fg_mu_s, fg_log_var_s = self.encode_s(input)
+        fg_s = self.reparameterize(fg_mu_s, fg_log_var_s)
+        zeros = torch.zeros_like(fg_s)
+        output = self.decode(torch.cat((zeros, fg_s), dim=1))
+        return [output, input, fg_mu_s, fg_log_var_s]
 
     # -------------------------------------------------------------------------
     # Loss & sampling
     # -------------------------------------------------------------------------
     def loss_function(self, *args) -> dict:
         """Standard VAE reconstruction + KL loss."""
-        beta = 1e-5
+        beta = self.beta
 
         recons_tg = args[0]
         input_tg = args[1]
@@ -234,7 +236,6 @@ class CVAE_V1(nn.Module):
             "loss": loss,
             "Reconstruction_Loss": recons_loss.detach(),
             "kld_loss": kld_loss.detach(),
-            #"KLD": kld_loss.detach(),
           
         }
 

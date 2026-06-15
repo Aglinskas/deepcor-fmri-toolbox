@@ -99,39 +99,142 @@ deepcor/
 ├── deepcor/
 │   ├── __init__.py
 │   ├── models/              # Model architectures
-│   │   ├── __init__.py
-│   │   ├── cvae.py          # cVAE model
-│   │   ├── base.py          # Base model class
-│   │   └── registry.py      # Model registry
 │   ├── data/                # Data loading and preprocessing
-│   │   ├── __init__.py
-│   │   ├── loaders.py       # Data loading utilities
-│   │   ├── preprocessing.py # Preprocessing functions
-│   │   └── datasets.py      # PyTorch datasets
 │   ├── training/            # Training utilities
-│   │   ├── __init__.py
-│   │   ├── trainer.py       # Training loop
-│   │   └── callbacks.py     # Training callbacks
 │   ├── analysis/            # Analysis tools
-│   │   ├── __init__.py
-│   │   ├── contrasts.py     # Contrast analysis
-│   │   ├── correlations.py  # Correlation analysis
-│   │   └── metrics.py       # Evaluation metrics
 │   ├── visualization/       # Visualization tools
-│   │   ├── __init__.py
-│   │   └── dashboard.py     # Training dashboard
 │   ├── utils/               # Utilities
-│   │   ├── __init__.py
-│   │   ├── io.py            # I/O utilities
-│   │   └── helpers.py       # Helper functions
 │   ├── pipeline.py          # High-level API
 │   └── config.py            # Configuration management
-├── examples/
-│   ├── quickstart.py
-│   └── advanced_usage.py
-└── tests/
-    └── ...
+├── examples/                # Example scripts and notebooks
+└── tests/                   # Test scripts and notebooks
 ```
+
+The sections below break down each module and list the functions/classes it
+exposes, with a brief note on what each one does.
+
+### `deepcor/pipeline.py` — high-level API
+
+- **`DeepCorDenoiser`** — scikit-learn-style high-level denoiser; the main entry point for most users.
+  - `.fit_denoise()` — fit the model on an EPI run and write the denoised output.
+  - `.save()` — save the trained ensemble of models.
+  - `.load()` — load previously trained models.
+
+### `deepcor/config.py` — configuration
+
+- **`ModelConfig`** — dataclass for model architecture settings (latent dims, beta, etc.).
+- **`TrainingConfig`** — dataclass for training settings (epochs, batch size, learning rate).
+- **`DataConfig`** — dataclass for data-processing settings.
+- **`DeepCorConfig`** — top-level config bundling the three configs above.
+- `get_default_config()` — return a `DeepCorConfig` populated with defaults.
+
+### `deepcor/models/` — model architectures
+
+**`cvae.py`** — current (v2) confound-aware Contrastive VAE.
+- **`CVAE`** — Contrastive VAE for fMRI denoising with disentangled signal/noise latent spaces.
+  - `.encode_z()` / `.encode_s()` — encode input to the signal / noise latent space.
+  - `.encode()` — encode input to both latent spaces.
+  - `.decode()` — decode latent codes back to a time series.
+  - `.forward_tg()` / `.forward_fg()` / `.forward_bg()` — forward pass for target (ROI), foreground (signal), and background (noise) branches.
+  - `.forward()` — standard forward pass.
+  - `.ncc()` — normalized cross-correlation loss term.
+  - `.loss_function()` — VAE loss with disentanglement terms.
+  - `.generate()` — produce denoised output from input.
+- **`GradientReversalFunction`** / **`GradientReversalLayer`** — gradient reversal used for adversarial confound removal.
+- `compute_in()`, `compute_in_size()`, `compute_out_size()`, `compute_padding()` — helpers that compute conv/deconv sizes and padding for the architecture.
+
+**`cvae_v1.py`** — original CVAE without confound conditioning.
+- **`CVAE_V1`** — original (v1) cVAE model.
+  - `.encode_z()` / `.encode_s()` — encode to signal / noise latent space.
+  - `.decode()` — decode concatenated latent codes to a time series.
+  - `.reparameterize()` — reparameterization trick for sampling.
+  - `.forward_tg()` / `.forward_bg()` / `.forward_fg()` — target / background / foreground forward passes.
+  - `.loss_function()` — reconstruction + KL loss.
+  - `.sample()` — sample from the latent prior and decode.
+  - `.generate()` — produce denoised output (foreground branch).
+
+**`base.py`**
+- **`BaseModel`** — abstract base class defining the model interface (`encode`, `decode`, `forward`, `loss_function`, `generate`, `reparameterize`).
+
+**`registry.py`**
+- `get_model()` — instantiate a model by version string (`'v1'`, `'v2'`, `'latest'`).
+- `list_models()` — list available model versions.
+
+### `deepcor/data/` — data loading and preprocessing
+
+**`loaders.py`**
+- `get_confounds()` — load motion confounds from an fMRIPrep TSV file.
+- `plot_timeseries()` — plot ROI and RONI timeseries.
+- `array_to_brain()` — convert a voxel array back to a brain volume (NIfTI).
+- `load_pickle()` / `save_pickle()` — pickle I/O helpers.
+
+**`preprocessing.py`**
+- `get_roi_and_roni()` — build ROI (gray matter) and RONI (non-gray-matter) masks.
+- `get_obs_noi_list_coords()` — extract observation/noise voxel lists with coordinates.
+- `get_obs_noi_list()` — extract observation/noise voxel lists.
+- `apply_dummy()` — drop dummy scans from EPI and confounds.
+- `censor_and_interpolate()` — censor and interpolate bad timepoints.
+- `apply_frame_censoring()` — apply motion-based frame censoring to the data.
+- `remove_std0()` — drop voxels with zero standard deviation.
+
+**`datasets.py`**
+- **`TrainDataset`** — PyTorch `Dataset` pairing observation (ROI) and noise (RONI) samples.
+
+### `deepcor/training/` — training utilities
+
+**`trainer.py`**
+- **`Trainer`** — training loop, optimization, and checkpointing.
+  - `.train_epoch()` — run a single training epoch.
+  - `.fit()` — train the model for N epochs.
+  - `.save_checkpoint()` / `.load_checkpoint()` — checkpoint I/O.
+- `save_model()` — legacy checkpoint saver kept for backward compatibility.
+- `save_brain_signals()` — generate and save denoised brain signals from a trained model.
+
+**`callbacks.py`**
+- **`TrackingCallback`** — record training metrics into a tracking dict.
+- **`CheckpointCallback`** — periodically save checkpoints during training.
+- **`EarlyStoppingCallback`** — stop training when loss stops improving.
+
+### `deepcor/analysis/` — analysis tools
+
+**`contrasts.py`**
+- `get_design_matrix()` — build a first-level GLM design matrix from an events file.
+- `get_contrast_val()` — compute per-voxel contrast values.
+- `calc_contrast_map()` — compute a whole-brain contrast map.
+- `run_contrast_analysis_from_spec()` — run a contrast analysis from a spec dictionary.
+
+**`correlations.py`**
+- `correlate_columns()` — Pearson correlation between matching columns of two matrices.
+- `calc_corr_map()` — compute a correlation map between an image and a target.
+- `run_correlation_analysis_from_spec()` — run a correlation analysis from a spec dictionary.
+
+**`metrics.py`**
+- `calc_mse()` — variance explained (R²) between two arrays.
+- `calc_and_save_compcor()` — compute and save CompCor-denoised data for comparison.
+- `average_signal_ensemble()` — average multiple denoised signal files into an ensemble.
+- `correlation()` — correlation between two vectors.
+
+### `deepcor/visualization/` — visualization tools
+
+**`dashboard.py`**
+- `get_varexp()` — compute variance explained between model input and output.
+- `update_track()` — update the tracking dict with current training state/metrics.
+- `init_track()` — initialize a tracking dictionary for a model version.
+- `save_track()` — save a tracking dictionary to file.
+- `show_dahsboard_v1_marimo()` — render the V1 training dashboard (marimo).
+- `show_dahsboard_v2_marimo()` — render the V2 (confound-aware) training dashboard (marimo).
+- `show_dahsboard_marimo()` — render the dashboard for the model version in the track (latest by default).
+
+**`plots.py`**
+- `plot_timeseries()` — plot ROI/RONI timeseries.
+
+### `deepcor/utils/` — utilities
+
+**`io.py`**
+- `safe_mkdir()` — create a directory if it doesn't already exist.
+
+**`helpers.py`**
+- `check_gpu_and_speedup()` — check GPU availability and benchmark speedup vs CPU.
 
 ## Key Components
 

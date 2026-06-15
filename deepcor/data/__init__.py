@@ -11,6 +11,7 @@ from .preprocessing import (
     remove_std0,
 )
 from .loaders import (
+    get_confounds,
     plot_timeseries,
     array_to_brain,
     load_pickle,
@@ -26,6 +27,7 @@ __all__ = [
     'censor_and_interpolate',
     'apply_frame_censoring',
     'remove_std0',
+    'get_confounds',
     'plot_timeseries',
     'array_to_brain',
     'load_pickle',

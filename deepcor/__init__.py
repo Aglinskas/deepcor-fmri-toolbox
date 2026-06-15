@@ -7,12 +7,18 @@ A Python package for denoising fMRI data using conditional variational autoencod
 __version__ = '0.1.0'
 __author__ = 'DeepCor Development Team'
 
+
+
+
 # High-level API
 from .pipeline import DeepCorDenoiser
 from .config import DeepCorConfig, ModelConfig, TrainingConfig, DataConfig
 
 # Models
 from .models import CVAE, cVAE, get_model, list_models
+
+from . import data, analysis, training, visualization, utils, models
+
 
 # Training
 from .training import Trainer, save_model, save_brain_signals
@@ -40,7 +46,7 @@ from .analysis import (
 from .visualization import (
     init_track,
     update_track,
-    show_dashboard,
+    show_dahsboard_v1_marimo,
     save_track,
 )
 
@@ -82,7 +88,7 @@ __all__ = [
     # Visualization
     'init_track',
     'update_track',
-    'show_dashboard',
+    'show_dahsboard_v1_marimo',
     'save_track',
     # Utilities
     'safe_mkdir',
