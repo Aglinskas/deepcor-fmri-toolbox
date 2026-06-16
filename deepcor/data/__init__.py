@@ -9,6 +9,7 @@ from .preprocessing import (
     censor_and_interpolate,
     apply_frame_censoring,
     remove_std0,
+    regress_from_data,
 )
 from .loaders import (
     get_confounds,
@@ -27,6 +28,7 @@ __all__ = [
     'censor_and_interpolate',
     'apply_frame_censoring',
     'remove_std0',
+    'regress_from_data',
     'get_confounds',
     'plot_timeseries',
     'array_to_brain',

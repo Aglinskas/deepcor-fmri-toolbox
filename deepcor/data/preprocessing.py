@@ -238,10 +238,10 @@ def apply_dummy(epi, df_conf, ndummy):
     """
     if ndummy > 0:
         epi_arr = epi.numpy()
-        epi_arr[:, :, :, 0:ndummy] = epi_arr[:, :, :, ndummy::].mean(axis=-1)[:, :, :, np.newaxis]
+        epi_arr[:, :, :, 0:ndummy] = epi_arr[:, :, :, ndummy+1::].mean(axis=-1)[:, :, :, np.newaxis]
         epi = epi.new_image_like(epi_arr)
 
-        df_conf.iloc[:ndummy, :] = 0
+        df_conf.iloc[:ndummy, :] = df_conf.iloc[ndummy+1::, :].mean(axis=0)
 
     return epi, df_conf
 
@@ -370,3 +370,53 @@ def remove_std0(arr):
     std0 = np.argwhere(np.std(arr, axis=1) == 0.0)
     arr_o = np.delete(arr, std0, axis=0)
     return arr_o
+
+
+def regress_from_data(epi, reg_out_matrix):
+    """
+    Regress a set of nuisance regressors out of an EPI image (voxel-wise).
+
+    Each voxel timeseries is z-scored, then the regressors are removed via OLS
+    and the residuals are returned as a new image. Voxels with near-zero
+    standard deviation are set to zero and skipped.
+
+    Args:
+        epi: EPI image (ANTs image), shape (..., nTR).
+        reg_out_matrix: Regressors to remove. Either a 1D vector of length nTR
+            or a 2D matrix of shape (nTR, n_regressors).
+
+    Returns:
+        ANTs image of the residuals, same shape/geometry as `epi`.
+    """
+    from sklearn import linear_model
+
+    nTR = epi.shape[-1]
+    epi_flat = epi.numpy().reshape(-1, nTR)
+
+    do_center = True
+    std0 = epi_flat.std(axis=-1) < 1e-3
+    if do_center:
+        epi_mean = epi_flat[~std0, :].mean(axis=-1)[:, np.newaxis]
+        epi_std = epi_flat[~std0, :].std(axis=-1)[:, np.newaxis]
+        epi_flat[~std0, :] = (epi_flat[~std0, :] - epi_mean) / epi_std
+        epi_flat[std0, :] = 0
+
+    reg_out_matrix_use = reg_out_matrix.copy()
+    if reg_out_matrix_use.ndim == 1:
+        reg_out_matrix_use = reg_out_matrix_use[:, np.newaxis]  # Make a matrix if a vector
+
+    reg_out_matrix_use[np.isnan(reg_out_matrix_use)] = 0  # fill NaNs
+
+    resid = np.zeros(epi_flat.shape)
+
+    lin_reg = linear_model.LinearRegression()
+    lin_reg.fit(reg_out_matrix_use, epi_flat[~std0, :].transpose())
+
+    res = epi_flat[~std0, :] - lin_reg.predict(reg_out_matrix_use).transpose()
+    
+    resid[~std0, :] = res
+    resid[~std0, :] = (resid[~std0, :] * epi_std) + epi_mean
+
+    epi_im_new = resid.reshape(epi.shape)
+    epi_new = epi.new_image_like(epi_im_new)
+    return epi_new

@@ -10,7 +10,7 @@ import marimo
 __generated_with = "0.23.9"
 app = marimo.App(
     width="full",
-    app_title="deepcor-forrest-advanced",
+    app_title="deepcor-ABCD-advanced",
     auto_download=["ipynb", "html"],
 )
 
@@ -24,9 +24,8 @@ def _():
     import ants
     from tqdm.auto import tqdm
     import matplotlib.pyplot as plt
-    import traceback
 
-    return ants, np, os, plt, torch, traceback
+    return ants, np, os, pd, plt, torch
 
 
 @app.cell
@@ -46,7 +45,6 @@ def _():
 
 @app.cell
 def _(deepcor):
-    # Check GPU details
     deepcor.utils.check_gpu_and_speedup(tensor_size=(1000,1000), n_iter=100)
     return
 
@@ -68,14 +66,14 @@ def _(deepcor):
 
     # TrainingConfig: Configure training parameters
     training_config = deepcor.TrainingConfig(
-        n_epochs=100,
+        n_epochs=10,
         batch_size=1024,
         learning_rate=0.001,
         optimizer='adamw',
         betas=(0.9, 0.999),
         eps=1e-08,
         max_grad_norm=5.0,
-        n_repetitions=10  # Number of ensemble repetitions
+        n_repetitions=5  # Number of ensemble repetitions
     )
 
 
@@ -84,7 +82,7 @@ def _(deepcor):
         n_dummy_scans=0,
         apply_censoring=False,
         censoring_threshold=0.0,
-        confound_columns=['X', 'Y', 'Z', 'RotX', 'RotY', 'RotZ']
+        confound_columns=['trans_x', 'trans_y', 'trans_z', 'rot_x', 'rot_y', 'rot_z']
     )
 
     # Create a complete configuration
@@ -112,16 +110,17 @@ def _(os):
     # Define Data Paths
     # Cell Tagged parameters for papermill looping
 
-    bids_path = '../Data/fMRI-Data/studyforrest-fmriprep/'
+    bids_path = '../Data/fMRI-Data/020-fmriprepped/'
 
-    subs = [sub for sub in os.listdir(os.path.join(bids_path)) if sub.startswith('sub-')]
+    subs = [sub for sub in os.listdir(os.path.join(bids_path))
+            if sub.startswith('sub-') and os.path.isdir(os.path.join(bids_path, sub))]
     subs.sort()
 
-    session = 'ses-localizer'
-    task = 'objectcategories'
+    session = 'ses-baselineYear1Arm1'
+    task = 'nback'
     space = 'MNI152NLin2009cAsym'
 
-    analysis_name = 'test-advanced'
+    analysis_name = 'test-advanced-ABCD'
     return analysis_name, bids_path, session, space, subs, task
 
 
@@ -135,14 +134,14 @@ def _(mo):
     else:
         print('interactive mode')
         s = 0
-        r = 4
+        r = 1
     return r, s
 
 
 @app.cell
 def _(analysis_name, r, s, subs):
     sub_id = subs[s]
-    run = str(r)
+    run = f'{r:02d}'  # ABCD runs are zero-padded (run-01, run-02)
 
     print(sub_id)
     print(run)
@@ -167,13 +166,14 @@ def _(
     base = os.path.join(bids_path,sub_id,session)
 
     # EPI
-    epi_path = os.path.join(base,'func',f'{sub_id}_{session}_task-{task}_run-{run}_bold_space-{space}_preproc.nii.gz')
+    epi_path = os.path.join(base,'func',f'{sub_id}_{session}_task-{task}_run-{run}_space-{space}_res-2_desc-preproc_bold.nii.gz')
 
     # Confounds
-    confounds_path = os.path.join(base,'func',f'{sub_id}_{session}_task-{task}_run-{run}_bold_confounds.tsv')
+    confounds_path = os.path.join(base,'func',f'{sub_id}_{session}_task-{task}_run-{run}_desc-confounds_timeseries.tsv')
 
-    gm_mask_path = os.path.join(bids_path,'mask_roi.nii')
-    cf_mask_path = os.path.join(bids_path,'mask_roni.nii')
+    # GM/CF masks are per-subject for ABCD (in the anat folder)
+    gm_mask_path = os.path.join(base,'anat','analysis_mask_GM.nii')
+    cf_mask_path = os.path.join(base,'anat','analysis_mask_CF.nii')
 
     assert os.path.exists(epi_path), 'epi_path does not exist'
     assert os.path.exists(confounds_path), 'confounds_path does not exist'
@@ -182,13 +182,18 @@ def _(
 
     os.makedirs(os.path.join('../Data/DeepCor-Outputs',analysis_name), exist_ok=True)
 
-    output_dir = os.path.join('../Data/DeepCor-Outputs',analysis_name,f'DeepCor-Forrest-S{s}-R{r}-cvae_v2')
+    output_dir = os.path.join('../Data/DeepCor-Outputs',analysis_name,f'DeepCor-ABCD-S{s}-R{r}-cvae_v2')
     deepcor.utils.io.safe_mkdir(output_dir)
 
     print("EPI:", epi_path)
     print("Confounds:", confounds_path)
     print("output_dir:", output_dir)
     return cf_mask_path, confounds_path, epi_path, gm_mask_path, output_dir
+
+
+@app.cell
+def _():
+    return
 
 
 @app.cell
@@ -205,31 +210,117 @@ def _(config, output_dir, r, s):
 
 
 @app.cell
-def _(ants, cf_mask_path, deepcor, epi_path, gm_mask_path):
+def _():
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _(ants, cf_mask_path, confounds_path, deepcor, epi_path, gm_mask_path, pd):
+    df_conf = pd.read_csv(confounds_path,delimiter='\t')
+
     epi = ants.image_read(epi_path)
     gm = ants.image_read(gm_mask_path)
     cf = ants.image_read(cf_mask_path)
 
+    epi, df_conf = deepcor.data.apply_dummy(epi,df_conf,ndummy=8)
+
+
+    deepcor.data.plot_timeseries(epi,gm,cf)
+
+    epi = deepcor.data.regress_from_data(epi,df_conf[['white_matter','csf']].values)
+
+    epi, df_conf = deepcor.data.apply_frame_censoring(epi,
+                                       df_conf,
+                                       idx_censor=df_conf['framewise_displacement'].values>.2,
+                                       also_nearby_voxels=True)
+
+    deepcor.data.plot_timeseries(epi,gm,cf)
+
     obs_list, noi_list, gm, cf = deepcor.data.get_obs_noi_list_coords(epi, gm, cf)
-    return cf, epi, gm, noi_list, obs_list
-
-
-@app.cell
-def _():
-    return
-
-
-@app.cell
-def _():
-    return
-
-
-@app.cell
-def _(confounds_path, deepcor, plt):
     conf = deepcor.data.get_confounds(confounds_path,norm='zscore')
+    return cf, conf, epi, gm, noi_list, obs_list
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _(conf, plt):
     plt.figure(figsize=(15,5))
     plt.plot(conf.transpose())
-    return (conf,)
+    return
 
 
 @app.cell
@@ -238,8 +329,7 @@ def _():
 
 
 @app.cell
-def _(cf, deepcor, epi, gm):
-    deepcor.data.plot_timeseries(epi,gm,cf)
+def _():
     return
 
 
@@ -343,7 +433,6 @@ def _(
     plt,
     r,
     s,
-    traceback,
     train_dataset,
     train_loader,
 ):
@@ -384,10 +473,8 @@ def _(
             deepcor.save_brain_signals(model,train_dataset,epi,gm,ofn=os.path.join(output_dir,f'signal_S{s}_R{r}_rep_{ensemble}.nii.gz'),batch_size=512,kind='FG')
             deepcor.save_brain_signals(model,train_dataset,epi,gm,ofn=os.path.join(output_dir,f'recon_S{s}_R{r}_rep_{ensemble}.nii.gz'),batch_size=512,kind='TG') # Optional
             deepcor.save_brain_signals(model,train_dataset,epi,gm,ofn=os.path.join(output_dir,f'noise_S{s}_R{r}_rep_{ensemble}.nii.gz'),batch_size=512,kind='BG') # Optional
-        except Exception as e:
-            print(f'error on ensemble {ensemble}, epoch {config.training.current_epoch}, skipping')
-            print(f'Actual error: {repr(e)}')
-            traceback.print_exc()
+        except:
+            print(f'error on ensemble {ensemble}, epoch {epoch}, skipping')
     return
 
 
@@ -446,13 +533,37 @@ def _():
 
 
 @app.cell
-def _(deepcor, epi, os, output_dir, r, s, sub_id):
+def _(deepcor, epi, np, os, output_dir, r, run, s, sub_id):
     run_post_analyses = True # Whether to run contrast and correlation analyses
 
+    # ABCD n-back: face conditions localize FFA, place conditions localize PPA
+    face_conditions = ['0_back_posface', '0_back_negface', '0_back_neutface',
+                       '2_back_posface', '2_back_negface', '2_back_neutface']
+
+    place_conditions = ['0_back_place', '2_back_place']
+
+    # Individual ROIs are indexed by subject number (alphabetical), not subject id
+    ffa_roi = f'../Data/ABCD-indiv-ROIs/FFA-ROI-S{s}.nii'
+    ppa_roi = f'../Data/ABCD-indiv-ROIs/PPA-ROI-S{s}.nii'
+
+    def make_contrast_vec(X1, pos_cols, neg_cols):
+        """Balanced contrast vector over the design-matrix columns (sums to zero)."""
+        vec = np.zeros(X1.shape[1])
+        cols = list(X1.columns)
+        for c in pos_cols:
+            vec[cols.index(c)] = 1.0 / len(pos_cols)
+        for c in neg_cols:
+            vec[cols.index(c)] = -1.0 / len(neg_cols)
+        return list(vec)
+
     if run_post_analyses:
-      events_fn = os.path.join(f'../Data/study-forrest-events/{sub_id}_ses-localizer_task-objectcategories_run-{r}_events.tsv')
+      events_fn = os.path.join(f'../Data/011-ABCD-events/{sub_id}_ses-baselineYear1Arm1_task-nback_run-{run}_events.tsv')
 
       X1 = deepcor.get_design_matrix(epi,events_fn)
+
+      # Keep only conditions actually present in this run's design matrix
+      face_cols = [c for c in face_conditions if c in X1.columns]
+      place_cols = [c for c in place_conditions if c in X1.columns]
       X1
 
     # If no post-training analyses needed, leave these empty
@@ -461,31 +572,31 @@ def _(deepcor, epi, os, output_dir, r, s, sub_id):
 
     if run_post_analyses==True:
       correlation_analyses.append(
-          {'corr_target' : X1['face'].values, # Correlate each voxel with this regressor
+          {'corr_target' : X1[face_cols].values.mean(axis=1), # Correlate each voxel with this regressor
           'filename' : os.path.join(output_dir,f'corr2face_S{s}_R{r}.nii.gz'), # Output filename
           'plot' : True, # Automatically plot? If so specify a ROI
-          'ROI' : f'../Data/study-forrest-ROIs/rFFA_final_mask_{sub_id}_bin.nii.gz'}) # ROI for plotting (Can be None)
+          'ROI' : ffa_roi}) # ROI for plotting (Can be None)
 
 
       correlation_analyses.append(
-          {'corr_target' : X1[['house','scene']].values.mean(axis=1),
+          {'corr_target' : X1[place_cols].values.mean(axis=1),
           'filename' : os.path.join(output_dir,f'corr2place_S{s}_R{r}.nii.gz'),
           'plot' : True,
-          'ROI' : f'../Data/study-forrest-ROIs/rPPA_final_mask_{sub_id}_bin.nii.gz'})
+          'ROI' : ppa_roi})
 
       contrast_analyses.append(
-          {'contrast_vec' : [-1,5,-1,-1,-1,-1,0,0,0,0], # Contrast Vector spec
+          {'contrast_vec' : make_contrast_vec(X1, face_cols, place_cols), # faces > places
           'design_matrix' : X1,
           'filename' : os.path.join(output_dir,f'contrast_face_{s}_R{r}.nii.gz'),
           'plot' : True,
-          'ROI' : f'../Data/study-forrest-ROIs/rFFA_final_mask_{sub_id}_bin.nii.gz'})
+          'ROI' : ffa_roi})
 
       contrast_analyses.append(
-          {'contrast_vec' : [-1,-1,2,-1,2,-1,0,0,0,0],
+          {'contrast_vec' : make_contrast_vec(X1, place_cols, face_cols), # places > faces
           'design_matrix' : X1,
           'filename' : os.path.join(output_dir,f'contrast_place_S{s}_R{r}.nii.gz'),
           'plot' : True,
-          'ROI' : f'../Data/study-forrest-ROIs/rPPA_final_mask_{sub_id}_bin.nii.gz'})
+          'ROI' : ppa_roi})
     return contrast_analyses, correlation_analyses, run_post_analyses
 
 

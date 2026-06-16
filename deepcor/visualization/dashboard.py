@@ -539,7 +539,7 @@ def show_dahsboard_v2_marimo(track, fig=None, save_fig=True):
     eta = per_epoch * remaining_epochs
     eta_formatted = str(eta)[0:9]
 
-    ttl = f'S{subject_idx}R{run_idx} Training started at: {tnow_formatted}, elapsed: {telapsed_formatted} Ens:{current_ensemble}/{n_repetitions}, E:{current_epoch}/{n_epochs} ETA:{eta_formatted}'
+    ttl = f'S{subject_idx}R{run_idx} Training started at: {tnow_formatted}, elapsed: {telapsed_formatted} Ens:{current_ensemble+1}/{n_repetitions}, E:{current_epoch+1}/{n_epochs} ETA:{eta_formatted}'
     plt.suptitle(ttl, y=.90)
 
     if save_fig:
