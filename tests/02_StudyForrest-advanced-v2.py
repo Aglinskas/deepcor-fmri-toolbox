@@ -311,7 +311,7 @@ for ensemble in range(config.training.n_repetitions):
         # Save track
         deepcor.visualization.save_track(os.path.join(output_dir, f'track_S{s}_R{r}_rep_{ensemble}.pickle'), track)
 
-        deepcor.save_brain_signals(model,train_dataset,epi,gm,ofn=os.path.join(output_dir,f'signal_S{s}_R{r}_rep_{ensemble}.nii.gz'),batch_size=512,kind='FG')
+        deepcor.save_brain_signals(model,train_dataset,epi,gm,ofn=os.path.join(output_dir,f'denoised_deepcor_S{s}_R{r}_rep_{ensemble}.nii.gz'),batch_size=512,kind='FG')
         #deepcor.save_brain_signals(model,train_dataset,epi,gm,ofn=os.path.join(output_dir,f'recon_S{s}_R{r}_rep_{ensemble}.nii.gz'),batch_size=512,kind='TG') # Optional
         #deepcor.save_brain_signals(model,train_dataset,epi,gm,ofn=os.path.join(output_dir,f'noise_S{s}_R{r}_rep_{ensemble}.nii.gz'),batch_size=512,kind='BG') # Optional
     except Exception as e:
@@ -348,7 +348,7 @@ for ensemble in range(config.training.n_repetitions):
 
 
 # Once training is finished
-signal_files = [os.path.join(output_dir,f) for f in os.listdir(output_dir) if all((f.startswith(f'signal_S{s}_R{r}_rep_'),f.endswith('.nii.gz')))]
+signal_files = [os.path.join(output_dir,f) for f in os.listdir(output_dir) if all((f.startswith(f'denoised_deepcor_S{s}_R{r}_rep_'),f.endswith('.nii.gz')))]
 track_files = [os.path.join(output_dir,f) for f in os.listdir(output_dir) if all((f.startswith(f'track_S{s}_R{r}_rep_'),f.endswith('.pickle')))]
 signal_files.sort()
 track_files.sort()
@@ -359,13 +359,13 @@ print('Ensemble of {} repetitions'.format(len(signal_files)))
 
 
 # Ensembling: Average the individual denoised files
-signals_averaged = deepcor.average_signal_ensemble(signal_files,os.path.join(output_dir,f'signal_S{s}_R{r}_avg.nii.gz'))
+signals_averaged = deepcor.average_signal_ensemble(signal_files,os.path.join(output_dir,f'denoised_deepcor_S{s}_R{r}_avg.nii.gz'))
 
 # Save a copy of the Nodenoised
-deepcor.data.array_to_brain(obs_list[:,0,:],epi,gm,os.path.join(output_dir,f'preproc_S{s}_R{r}.nii.gz'),inv_z_score=True,return_img=False)
+deepcor.data.array_to_brain(obs_list[:,0,:],epi,gm,os.path.join(output_dir,f'input_data_S{s}_R{r}.nii.gz'),inv_z_score=True,return_img=False)
 
 # Save the CompCor version
-compcor = deepcor.calc_and_save_compcor(epi,gm,cf,os.path.join(output_dir,f'compcor_S{s}_R{r}.nii.gz'),n_components=5,return_img=True)
+compcor = deepcor.calc_and_save_compcor(epi,gm,cf,os.path.join(output_dir,f'denoised_compcor_S{s}_R{r}.nii.gz'),n_components=5,return_img=True)
 
 
 # In[ ]:

@@ -32,6 +32,12 @@ class TrainingConfig:
     max_grad_norm: float = 5.0
     n_repetitions: int = 20
 
+    # Live training state. Populated by the trainer/pipeline during the
+    # ensemble loop and read by the dashboard (update_track). Declared here
+    # with defaults so any consumer can read them without an AttributeError.
+    current_epoch: int = 0
+    current_ensemble: int = 0
+
 
 @dataclass
 class DataConfig:
@@ -41,9 +47,15 @@ class DataConfig:
     apply_censoring: bool = False
     censoring_threshold: float = 0.5
     also_nearby_voxels: bool = True
-    confound_columns: List[str] = field(
-        default_factory=lambda: ['X', 'Y', 'Z', 'RotX', 'RotY', 'RotZ']
-    )
+    # None => let get_confounds auto-detect the motion columns (handles both
+    # fmriprep old-style 'X','Y','Z',... and new-style 'trans_x',... names).
+    confound_columns: Optional[List[str]] = None
+
+    # Metadata used to name dashboard/track outputs (read by the dashboard via
+    # update_track). Defaulted so the high-level API works without setting them.
+    output_dir: Optional[str] = None
+    subject_idx: int = 0
+    run_idx: int = 0
 
 
 @dataclass

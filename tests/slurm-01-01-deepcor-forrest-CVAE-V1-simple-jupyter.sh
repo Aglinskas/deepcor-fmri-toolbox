@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH --job-name=DeepCor-forrest-V2-jupyter
-#SBATCH --output=../Data/DeepCor-Outputs/test-jupyter/slurm_outputs/slurm_outputs_out_%a.txt
-#SBATCH --error=../Data/DeepCor-Outputs/test-jupyter/slurm_outputs/slurm_outputs_err_%a.txt
+#SBATCH --job-name=DeepCor-forrest-V1-simple-jupyter
+#SBATCH --output=../Data/DeepCor-Outputs/test-simple-jupyter-V1/slurm_outputs/slurm_outputs_out_%a.txt
+#SBATCH --error=../Data/DeepCor-Outputs/test-simple-jupyter-V1/slurm_outputs/slurm_outputs_err_%a.txt
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --gres=gpu:1
@@ -12,12 +12,11 @@
 
 
 #rm -rf $deepcor_dir$analysis_name # To clear previous ouputs
-#sbatch slurm-01-deepcor-forrest-CVAE-V2-jupyter.sh
-
+#sbatch slurm-01-01-deepcor-forrest-CVAE-V1-simple-jupyter.sh
 
 deepcor_dir=../Data/DeepCor-Outputs/
-notebook_name=02_StudyForrest-advanced-v2
-analysis_name=test-jupyter
+notebook_name=01_StudyForrest-simple-v1
+analysis_name=test-simple-jupyter-V1
 
 param_epochs=5
 param_repetitions=5

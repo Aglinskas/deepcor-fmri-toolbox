@@ -5,10 +5,9 @@ import os
 
 def safe_mkdir(path):
     """
-    Create directory if it doesn't exist.
+    Create directory (and any missing parents) if it doesn't exist.
 
     Args:
         path: Directory path to create
     """
-    if not os.path.exists(path):
-        os.mkdir(path)
+    os.makedirs(path, exist_ok=True)

@@ -11,7 +11,7 @@ __author__ = 'DeepCor Development Team'
 
 
 # High-level API
-from .pipeline import DeepCorDenoiser
+from .pipeline import DeepCorDenoiser, DeepCor, DeepCorResult
 from .config import DeepCorConfig, ModelConfig, TrainingConfig, DataConfig
 
 # Models
@@ -47,6 +47,9 @@ from .visualization import (
     init_track,
     update_track,
     show_dahsboard_v1_marimo,
+    show_dahsboard_marimo,
+    show_dahsboard_jupyter,
+    format_progress_title,
     save_track,
 )
 
@@ -59,6 +62,8 @@ __all__ = [
     '__author__',
     # High-level API
     'DeepCorDenoiser',
+    'DeepCor',
+    'DeepCorResult',
     'DeepCorConfig',
     'ModelConfig',
     'TrainingConfig',
@@ -89,6 +94,9 @@ __all__ = [
     'init_track',
     'update_track',
     'show_dahsboard_v1_marimo',
+    'show_dahsboard_marimo',
+    'show_dahsboard_jupyter',
+    'format_progress_title',
     'save_track',
     # Utilities
     'safe_mkdir',

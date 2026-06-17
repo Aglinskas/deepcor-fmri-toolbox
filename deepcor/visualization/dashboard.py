@@ -89,6 +89,17 @@ def update_track(track,train_loader,model,config):
         track['batch_gm_mu_s'] = batch_gm_mu_s
         track['batch_cf_mu_s'] = batch_cf_mu_s
 
+        # Progress metadata for the dashboard title (started/elapsed/ETA across
+        # all ensembles). Mirrors the V2 branch so show_dahsboard_v1_marimo can
+        # render the same title.
+        track['current_ensemble'] = config.training.current_ensemble
+        track['current_epoch'] = config.training.current_epoch
+        track['n_ensembles'] = config.training.n_repetitions
+        track['n_epochs'] = config.training.n_epochs
+        track['output_dir'] = config.data.output_dir
+        track['subject_idx'] = config.data.subject_idx
+        track['run_idx'] = config.data.run_idx
+
         #
        
       
@@ -282,12 +293,62 @@ def save_track(track_ofn, track):
     with open(track_ofn, 'wb') as handle:
         pickle.dump(track, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-def show_dahsboard_v1_marimo(track):
+
+def format_progress_title(track):
+    """Build the 'S{sub}R{run} ... started ... elapsed ... ETA ...' string.
+
+    Shared by the dashboard suptitle and the high-level pipeline's per-epoch
+    progress line so both report identical subject/run/started/elapsed/ETA
+    information. Reads the per-run metadata populated by update_track.
+    """
     from datetime import datetime
-    
+
+    current_ensemble = track['current_ensemble']
+    current_epoch = track['current_epoch']
+    n_repetitions = track['n_ensembles']
+    n_epochs = track['n_epochs']
+    subject_idx = track.get('subject_idx')
+    run_idx = track.get('run_idx')
+
+    T_display_start = track.get('T_overall_start', track.get('T_start'))
+    tnow = datetime.now()
+    telapsed = tnow - T_display_start
+
+    tnow_formatted = str(T_display_start)[0:19]
+    telapsed_formatted = str(telapsed)[0:9]
+
+    epochs_done = current_epoch + 1
+    total_epochs_done = current_ensemble * n_epochs + epochs_done
+    per_epoch = telapsed / total_epochs_done
+    remaining_epochs = (
+        (n_epochs - epochs_done)
+        + (n_repetitions - 1 - current_ensemble) * n_epochs
+    )
+    eta = per_epoch * remaining_epochs
+    eta_formatted = str(eta)[0:9]
+
+    return (
+        f'S{subject_idx}R{run_idx} Training started at: {tnow_formatted}, '
+        f'elapsed: {telapsed_formatted} Ens:{current_ensemble+1}/{n_repetitions}, '
+        f'E:{current_epoch+1}/{n_epochs} ETA:{eta_formatted}'
+    )
+
+def show_dahsboard_v1_marimo(track, fig=None, save_fig=True):
+    """Render the V1 (original CVAE) training dashboard.
+
+    Pass fig=<existing fig> to reuse a figure object across iterations (avoids
+    accumulating figures in memory). If save_fig is True the figure is written
+    to output_dir/dashboard_S{subject_idx}_R{run_idx}_rep_{current_ensemble}.png
+    using the progress metadata populated by update_track's V1 branch.
+    """
+    from datetime import datetime
+
     ncols = 4
     nrows = 4
-    fig = plt.figure(figsize=(5*ncols,5*nrows))
+    if fig is None:
+        fig = plt.figure(figsize=(5*ncols,5*nrows))
+    else:
+        plt.figure(fig.number)
     sp = 0
     
     model_version = track["model_version"]
@@ -397,11 +458,45 @@ def show_dahsboard_v1_marimo(track):
     plt.legend(['GM S','CF S'])
     plt.title('S features')
     
-    tnow = datetime.now()
-    telapsed = tnow-T_start
-    plt.suptitle(f'Training started at: {T_start.strftime("%Y-%m-%d %H:%M:%S")}, elapsed: {telapsed.strftime("%Y-%m-%d %H:%M:%S")}',y=.92)
+    # Progress title (started / elapsed / ETA across all ensembles), matching
+    # show_dahsboard_v2_marimo. Metadata is populated by update_track's V1 branch.
+    ttl = format_progress_title(track)
+    plt.suptitle(ttl, y=.92)
+
+    if save_fig:
+        png_path = os.path.join(
+            track['output_dir'],
+            f"dashboard_S{track.get('subject_idx')}_R{track.get('run_idx')}"
+            f"_rep_{track['current_ensemble']}.png"
+        )
+        fig.savefig(png_path, dpi=100, bbox_inches='tight')
 
     #plt.show()
+
+    return fig
+
+
+def show_dahsboard_v1_jupyter(track, fig=None, save_fig=True, display=True):
+    """Render the V1 dashboard with the (matplotlib) Jupyter backend.
+
+    This is pure matplotlib — it never imports marimo. When ``display`` is True
+    it additionally clears the cell output and shows the figure in-place
+    (IPython, lazily imported), matching mo.output.replace_at_index. Set
+    ``display=False`` to only render and save the figure, which needs neither
+    marimo nor IPython installed.
+
+    Pass fig=this_fig to reuse the same figure object across iterations. The
+    caller is responsible for closing the figure when done.
+    """
+    fig = show_dahsboard_v1_marimo(track, fig=fig, save_fig=save_fig)
+
+    if display:
+        import sys
+        from IPython import display as ipython_display
+
+        sys.stdout.flush()
+        ipython_display.clear_output(wait=True)
+        ipython_display.display(fig)
 
     return fig
 
@@ -517,36 +612,41 @@ def show_dahsboard_v2_marimo(track, fig=None, save_fig=True):
     plt.title('avg of log_var')
 
 
-    current_ensemble = track['current_ensemble']
-    current_epoch = track['current_epoch']
-    n_repetitions = track['n_ensembles']
-    n_epochs = track['n_epochs']
-  
-    output_dir = track['output_dir']
-    subject_idx = track['subject_idx']
-    run_idx = track['run_idx']
-
-
-    tnow = datetime.now()
-    telapsed = tnow - T_start
-
-    tnow_formatted = str(T_start)[0:19]
-    telapsed_formatted = str(telapsed)[0:9]
-
-    epochs_done = current_epoch + 1
-    per_epoch = telapsed / epochs_done
-    remaining_epochs = (n_epochs - epochs_done) + (n_repetitions - 1 - current_ensemble) * n_epochs
-    eta = per_epoch * remaining_epochs
-    eta_formatted = str(eta)[0:9]
-
-    ttl = f'S{subject_idx}R{run_idx} Training started at: {tnow_formatted}, elapsed: {telapsed_formatted} Ens:{current_ensemble+1}/{n_repetitions}, E:{current_epoch+1}/{n_epochs} ETA:{eta_formatted}'
+    ttl = format_progress_title(track)
     plt.suptitle(ttl, y=.90)
 
     if save_fig:
         png_path = os.path.join(
-            output_dir, f'dashboard_S{subject_idx}_R{run_idx}_rep_{current_ensemble}.png'
+            track['output_dir'],
+            f"dashboard_S{track.get('subject_idx')}_R{track.get('run_idx')}"
+            f"_rep_{track['current_ensemble']}.png"
         )
         fig.savefig(png_path, dpi=100, bbox_inches='tight')
+
+    return fig
+
+
+def show_dahsboard_v2_jupyter(track, fig=None, save_fig=True, display=True):
+    """Render the V2 dashboard with the (matplotlib) Jupyter backend.
+
+    This is pure matplotlib — it never imports marimo. When ``display`` is True
+    it additionally clears the cell output and shows the figure in-place
+    (IPython, lazily imported), matching mo.output.replace_at_index. Set
+    ``display=False`` to only render and save the figure, which needs neither
+    marimo nor IPython installed.
+
+    Pass fig=this_fig to reuse the same figure object across iterations. The
+    caller is responsible for closing the figure when done.
+    """
+    fig = show_dahsboard_v2_marimo(track, fig=fig, save_fig=save_fig)
+
+    if display:
+        import sys
+        from IPython import display as ipython_display
+
+        sys.stdout.flush()
+        ipython_display.clear_output(wait=True)
+        ipython_display.display(fig)
 
     return fig
 
@@ -560,8 +660,12 @@ _DASHBOARD_RENDERERS = {
 LATEST_DASHBOARD_VERSION = 'V2'
 
 
-def show_dahsboard_marimo(track):
-    """Render the dashboard for track['model_version'] (latest by default)."""
+def show_dahsboard_marimo(track, fig=None, save_fig=True):
+    """Render the dashboard for track['model_version'] (latest by default).
+
+    Pass fig=<existing fig> to reuse a figure object across epochs; save_fig
+    controls whether the figure is written to output_dir.
+    """
     version = track.get('model_version', LATEST_DASHBOARD_VERSION)
     renderer = _DASHBOARD_RENDERERS.get(version)
     if renderer is None:
@@ -569,5 +673,34 @@ def show_dahsboard_marimo(track):
             f"No dashboard renderer for {version!r}; "
             f"available: {sorted(_DASHBOARD_RENDERERS)}"
         )
-    return renderer(track)
+    return renderer(track, fig=fig, save_fig=save_fig)
+
+
+# Track-schema version -> Jupyter dashboard renderer. The Jupyter renderers
+# display the figure in-place (IPython clear_output + display) and save it,
+# without requiring marimo. Add new renderers here alongside _DASHBOARD_RENDERERS.
+_DASHBOARD_RENDERERS_JUPYTER = {
+    'V1': show_dahsboard_v1_jupyter,
+    'V2': show_dahsboard_v2_jupyter,
+}
+
+
+def show_dahsboard_jupyter(track, fig=None, save_fig=True, display=True):
+    """Render the Jupyter dashboard for track['model_version'] (latest by default).
+
+    Marimo-free counterpart of show_dahsboard_marimo: dispatches to the
+    version-appropriate ``show_dahsboard_v{N}_jupyter`` renderer (pure
+    matplotlib). When ``save_fig`` it writes the figure to output_dir; when
+    ``display`` it also shows it in-place via IPython. With ``display=False``
+    it only renders + saves and needs neither marimo nor IPython installed.
+    Pass fig=<existing fig> to reuse a figure object across epochs.
+    """
+    version = track.get('model_version', LATEST_DASHBOARD_VERSION)
+    renderer = _DASHBOARD_RENDERERS_JUPYTER.get(version)
+    if renderer is None:
+        raise ValueError(
+            f"No Jupyter dashboard renderer for {version!r}; "
+            f"available: {sorted(_DASHBOARD_RENDERERS_JUPYTER)}"
+        )
+    return renderer(track, fig=fig, save_fig=save_fig, display=display)
 

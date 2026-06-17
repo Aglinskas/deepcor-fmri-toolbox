@@ -65,7 +65,7 @@ def _():
 
 @app.cell
 def _():
-    signal_rep_fn = '../Data/DeepCor-Outputs/test-advanced/DeepCor-Forrest-S{s}-R{r}-cvae_v2/signal_S{s}_R{r}_rep_{rep}.nii.gz'
+    signal_rep_fn = '../Data/DeepCor-Outputs/test-advanced/DeepCor-Forrest-S{s}-R{r}-cvae_v2/denoised_deepcor_S{s}_R{r}_rep_{rep}.nii.gz'
     return (signal_rep_fn,)
 
 
