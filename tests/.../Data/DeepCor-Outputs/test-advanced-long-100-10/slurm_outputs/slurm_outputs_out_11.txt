@@ -1,0 +1,27 @@
+../Data/DeepCor-Outputs/test-advanced-long-100-10
+HOSTNAME: g004
+CONDA_PREFIX: /home/aglinska/anaconda3/envs/deepcor
+/home/aglinska/anaconda3/envs/deepcor/bin/python
+/home/aglinska/anaconda3/envs/deepcor/bin/marimo
+Tue Jun 16 13:00:55 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 575.57.08              Driver Version: 575.57.08      CUDA Version: 12.9     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA A100-PCIE-40GB          Off |   00000000:E3:00.0 Off |                    0 |
+| N/A   43C    P0             35W /  250W |       0MiB /  40960MiB |      0%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+Tue Jun 16 01:00:56 PM EDT 2026
+Watching /projects/sccn/andromeda1/aglinska/deepcor-fmri-toolbox/tests/02_StudyForrest-advanced-v2_mo.py for changes...

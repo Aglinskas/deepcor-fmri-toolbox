@@ -251,13 +251,13 @@ def _(plt):
     def plot_scatter(xvals,yvals,xlabel='',ylabel='',ttl=''):
         v1=xvals.flatten()
         v2=yvals.flatten()
-    
+
         nsubs_, nruns_ = xvals.shape
         labels = [f'S{s+1}R{r+1}' for s in range(nsubs_) for r in range(nruns_)]
-    
+
         for x, y, lab in zip(v1, v2, labels):
             plt.text(x, y, lab, ha='center', va='center', fontsize=7)
-    
+
         # x=y reference line
         lo = min(v1.min(), v2.min())
         hi = max(v1.max(), v2.max())
@@ -266,7 +266,7 @@ def _(plt):
         plt.plot(lims, lims, 'k--', lw=1, alpha=0.6, zorder=0)
         plt.xlim(lims); plt.ylim(lims)
         plt.gca().set_aspect('equal')
-    
+
         plt.xlabel(xlabel)
         plt.ylabel(ylabel)
         plt.title(ttl)

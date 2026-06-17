@@ -75,7 +75,7 @@ def _(deepcor):
         betas=(0.9, 0.999),
         eps=1e-08,
         max_grad_norm=5.0,
-        n_repetitions=10  # Number of ensemble repetitions
+        n_repetitions=20  # Number of ensemble repetitions
     )
 
 
@@ -121,7 +121,7 @@ def _(os):
     task = 'objectcategories'
     space = 'MNI152NLin2009cAsym'
 
-    analysis_name = 'test-advanced'
+    analysis_name = 'test-advanced-long-100-10'
     return analysis_name, bids_path, session, space, subs, task
 
 
@@ -347,10 +347,13 @@ def _(
     train_dataset,
     train_loader,
 ):
+    from datetime import datetime
+    T_overall_start = datetime.now()
     for ensemble in range(config.training.n_repetitions):
         try:
             config.training.current_ensemble = ensemble
             track = deepcor.visualization.init_track('V2')
+            track['T_overall_start'] = T_overall_start
             loss_history = []
 
             model = init_model(config)
@@ -382,8 +385,8 @@ def _(
             deepcor.visualization.save_track(os.path.join(output_dir, f'track_S{s}_R{r}_rep_{ensemble}.pickle'), track)
 
             deepcor.save_brain_signals(model,train_dataset,epi,gm,ofn=os.path.join(output_dir,f'signal_S{s}_R{r}_rep_{ensemble}.nii.gz'),batch_size=512,kind='FG')
-            deepcor.save_brain_signals(model,train_dataset,epi,gm,ofn=os.path.join(output_dir,f'recon_S{s}_R{r}_rep_{ensemble}.nii.gz'),batch_size=512,kind='TG') # Optional
-            deepcor.save_brain_signals(model,train_dataset,epi,gm,ofn=os.path.join(output_dir,f'noise_S{s}_R{r}_rep_{ensemble}.nii.gz'),batch_size=512,kind='BG') # Optional
+            #deepcor.save_brain_signals(model,train_dataset,epi,gm,ofn=os.path.join(output_dir,f'recon_S{s}_R{r}_rep_{ensemble}.nii.gz'),batch_size=512,kind='TG') # Optional
+            #deepcor.save_brain_signals(model,train_dataset,epi,gm,ofn=os.path.join(output_dir,f'noise_S{s}_R{r}_rep_{ensemble}.nii.gz'),batch_size=512,kind='BG') # Optional
         except Exception as e:
             print(f'error on ensemble {ensemble}, epoch {config.training.current_epoch}, skipping')
             print(f'Actual error: {repr(e)}')
@@ -476,7 +479,7 @@ def _(deepcor, epi, os, output_dir, r, s, sub_id):
       contrast_analyses.append(
           {'contrast_vec' : [-1,5,-1,-1,-1,-1,0,0,0,0], # Contrast Vector spec
           'design_matrix' : X1,
-          'filename' : os.path.join(output_dir,f'contrast_face_{s}_R{r}.nii.gz'),
+          'filename' : os.path.join(output_dir,f'contrast_face_S{s}_R{r}.nii.gz'),
           'plot' : True,
           'ROI' : f'../Data/study-forrest-ROIs/rFFA_final_mask_{sub_id}_bin.nii.gz'})
 

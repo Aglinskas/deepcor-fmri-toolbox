@@ -7,8 +7,12 @@
 
 import marimo
 
-__generated_with = "0.23.8"
-app = marimo.App(width="full", auto_download=["ipynb", "html"])
+__generated_with = "0.23.9"
+app = marimo.App(
+    width="full",
+    app_title="deepcor-forrest-advanced-v1",
+    auto_download=["ipynb", "html"],
+)
 
 
 @app.cell
@@ -20,13 +24,15 @@ def _():
     import ants
     from tqdm.auto import tqdm
     import matplotlib.pyplot as plt
+    import traceback
 
-    return ants, os, pd, torch
+    return ants, os, plt, torch, traceback
 
 
 @app.cell
 def _(os):
     import marimo as mo
+
     os.chdir(mo.notebook_dir()) #Jupyterlab-like, change path to where the notebook is, all paths relative to this
     return (mo,)
 
@@ -39,36 +45,41 @@ def _():
 
 
 @app.cell
-def _():
-    #deepcor.utils.check_gpu_and_speedup(tensor_size=(1000,1000), n_iter=100)
+def _(deepcor):
+    # Check GPU details
+    deepcor.utils.check_gpu_and_speedup(tensor_size=(1000,1000), n_iter=100)
     return
 
 
 @app.cell
 def _(deepcor):
     # ModelConfig: Configure the model architecture
+    # NOTE (V1): CVAE_V1 uses a single latent dim per encoder branch and a single
+    # `beta` KLD weight. Only `latent_dims[0]` and `beta` are consumed below; the
+    # remaining fields (gamma/delta/scale_MSE_*/do_disentangle) are V2-only and
+    # are ignored by the V1 model.
     model_config = deepcor.ModelConfig(
-        latent_dims=(8, 8),  # (shared dim, specific dim)
+        latent_dims=(8, 8),  # V1 uses latent_dims[0] for both z and s branches
         beta=0.01,           # KLD loss weight
-        gamma=0.0,           # TC loss weight
-        delta=0.0,           # RONI zero constraint weight
-        scale_MSE_GM=1e3,    # Gray matter reconstruction loss scale
-        scale_MSE_CF=1e3,    # Non-gray matter reconstruction loss scale
-        scale_MSE_FG=0.0,    # Foreground reconstruction loss scale
-        do_disentangle=True  # Enable disentanglement
+        gamma=0.0,           # (V2-only) TC loss weight
+        delta=0.0,           # (V2-only) RONI zero constraint weight
+        scale_MSE_GM=1e3,    # (V2-only) Gray matter reconstruction loss scale
+        scale_MSE_CF=1e3,    # (V2-only) Non-gray matter reconstruction loss scale
+        scale_MSE_FG=0.0,    # (V2-only) Foreground reconstruction loss scale
+        do_disentangle=True  # (V2-only) Enable disentanglement
     )
 
 
     # TrainingConfig: Configure training parameters
     training_config = deepcor.TrainingConfig(
-        n_epochs=100,
-        batch_size=256,
+        n_epochs=5,
+        batch_size=1024,
         learning_rate=0.001,
         optimizer='adamw',
         betas=(0.9, 0.999),
         eps=1e-08,
         max_grad_norm=5.0,
-        n_repetitions=20  # Number of ensemble repetitions
+        n_repetitions=5  # Number of ensemble repetitions
     )
 
 
@@ -96,6 +107,11 @@ def _(deepcor):
 
 
 @app.cell
+def _():
+    return
+
+
+@app.cell
 def _(os):
     # Define Data Paths
     # Cell Tagged parameters for papermill looping
@@ -109,10 +125,22 @@ def _(os):
     task = 'objectcategories'
     space = 'MNI152NLin2009cAsym'
 
-    s = 0
-    r = 1
-    analysis_name = 'test-advanced'
-    return analysis_name, bids_path, r, s, session, space, subs, task
+    analysis_name = 'test-advanced-V1'
+    return analysis_name, bids_path, session, space, subs, task
+
+
+@app.cell
+def _(mo):
+    cli_args = mo.cli_args()
+    if cli_args:
+        print('script mode')
+        s = int(cli_args['s'])
+        r = int(cli_args['r'])
+    else:
+        print('interactive mode')
+        s = 0
+        r = 4
+    return r, s
 
 
 @app.cell
@@ -132,7 +160,9 @@ def _(
     bids_path,
     deepcor,
     os,
+    r,
     run,
+    s,
     session,
     space,
     sub_id,
@@ -155,7 +185,8 @@ def _(
     assert os.path.exists(cf_mask_path), 'cf_mask_path does not exist'
 
     os.makedirs(os.path.join('../Data/DeepCor-Outputs',analysis_name), exist_ok=True)
-    output_dir = os.path.join('../Data/DeepCor-Outputs',analysis_name,f'DeepCor-Forrest-{sub_id}-{task}-{run}-cvae_v1')
+
+    output_dir = os.path.join('../Data/DeepCor-Outputs',analysis_name,f'DeepCor-Forrest-S{s}-R{r}-cvae_v1')
     deepcor.utils.io.safe_mkdir(output_dir)
 
     print("EPI:", epi_path)
@@ -165,14 +196,50 @@ def _(
 
 
 @app.cell
-def _(ants, cf_mask_path, confounds_path, deepcor, epi_path, gm_mask_path, pd):
+def _():
+    return
+
+
+@app.cell
+def _(config, output_dir, r, s):
+    config.data.output_dir = output_dir
+    config.data.subject_idx = s
+    config.data.run_idx = r
+    return
+
+
+@app.cell
+def _(ants, cf_mask_path, deepcor, epi_path, gm_mask_path):
     epi = ants.image_read(epi_path)
-    df_conf = pd.read_csv(confounds_path, sep='\t') # Use tab separator
     gm = ants.image_read(gm_mask_path)
     cf = ants.image_read(cf_mask_path)
 
+    # V1: single-channel loader (no coordinate channels). obs_list shape (N, 1, nTR).
     obs_list, noi_list, gm, cf = deepcor.data.get_obs_noi_list(epi, gm, cf)
     return cf, epi, gm, noi_list, obs_list
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _(confounds_path, deepcor, plt):
+    conf = deepcor.data.get_confounds(confounds_path,norm='zscore')
+    plt.figure(figsize=(15,5))
+    plt.plot(conf.transpose())
+    return
+
+
+@app.cell
+def _():
+    return
 
 
 @app.cell
@@ -194,75 +261,46 @@ def _(config, deepcor, noi_list, obs_list, torch):
         train_dataset, 
         batch_size=config.training.batch_size, 
         shuffle=True, 
-        drop_last=True
-    )
-    return (train_loader,)
+        drop_last=True)
+    return train_dataset, train_loader
+
+
+@app.cell
+def _():
+    return
 
 
 @app.cell
 def _(deepcor, obs_list, torch):
     in_dim = obs_list.shape[-1]
-    # Initialize Model
-    # We pass the Prepared confounds tensor here
+    in_channels = obs_list.shape[-2]  # data-adaptive: 1 for the V1 (no-coords) loader
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-    model = deepcor.models.CVAE_V1(in_channels=1,in_dim=in_dim,latent_dim=8)
-    model = model.to(device)
-    print("Model initialized and moved to device")
-    return device, model
 
+    def init_model(config):
+        # V1: no confounds, single scalar latent dim per branch, single beta.
+        model = deepcor.models.CVAE_V1(
+            in_channels=in_channels,
+            in_dim=in_dim,
+            latent_dim=config.model.latent_dims[0],
+            beta=config.model.beta)
 
-@app.cell
-def _(config):
-    config.training.n_epochs = 10
-    return
+        model = model.to(device)
+        return model
 
+    def init_trainer(model,config):
+        trainer = deepcor.training.Trainer(
+            model,
+            device=device,
+            optimizer_type=config.training.optimizer,
+            lr=config.training.learning_rate,
+            betas=config.training.betas,
+            eps=config.training.eps,
+            max_grad_norm=config.training.max_grad_norm
+        )
 
-@app.cell
-def _(config, deepcor, device, model):
-    # Initialize Trainer
-    trainer = deepcor.training.Trainer(
-        model,
-        device=device,
-        optimizer_type=config.training.optimizer,
-        lr=config.training.learning_rate,
-        betas=config.training.betas,
-        eps=config.training.eps,
-        max_grad_norm=config.training.max_grad_norm
-    )
-    print("Trainer initialized")
-    return (trainer,)
+        return trainer
 
-
-@app.cell
-def _(config, deepcor, mo, model, os, output_dir, train_loader, trainer):
-    n_ensebles = 1
-    for ensemble in mo.status.progress_bar(range(n_ensebles),title='Outer Loop',completion_title='All Ensembles Trained', show_eta=True):
-        track = deepcor.visualization.init_track('V1')
-        loss_history = []
-        for epoch in mo.status.progress_bar(range(config.training.n_epochs),show_eta=True,title='Inner Loop',remove_on_exit=False):
-            # Train one epoch
-            avg_loss = trainer.train_epoch(train_loader)
-            loss_history.append(avg_loss)
-
-            deepcor.visualization.update_track(track,train_loader,model)
-            track['loss'] = loss_history
-
-            fig = deepcor.visualization.show_dahsboard_v1_marimo(track)
-            #mo.output.replace(fig)   # replace previous plot with the new one
-            mo.output.replace_at_index(fig,2)
-            #plt.close(fig)           # avoid duplicate/static matplotlib display
-
-        # Save outputs
-        #print("Saving model and results...")
-        # Save checkpoint
-        trainer.save_checkpoint(
-            os.path.join(output_dir, f'model_final_ens{ensemble}.pt'), 
-            config.training.n_epochs, 
-            avg_loss)
-
-        # Save track
-        deepcor.visualization.save_track(os.path.join(output_dir, f'track_ens{ensemble}.pickle'), track)
-    return
+    return init_model, init_trainer
 
 
 @app.cell
@@ -287,6 +325,232 @@ def _():
 
 @app.cell
 def _():
+    return
+
+
+@app.cell
+def _(
+    config,
+    deepcor,
+    epi,
+    gm,
+    init_model,
+    init_trainer,
+    mo,
+    os,
+    output_dir,
+    plt,
+    r,
+    s,
+    traceback,
+    train_dataset,
+    train_loader,
+):
+    from datetime import datetime
+    T_overall_start = datetime.now()
+    for ensemble in range(config.training.n_repetitions):
+        try:
+            config.training.current_ensemble = ensemble
+            track = deepcor.visualization.init_track('V1')
+            track['T_overall_start'] = T_overall_start
+            loss_history = []
+
+            model = init_model(config)
+            trainer = init_trainer(model,config)
+
+            for epoch in range(config.training.n_epochs):
+                config.training.current_epoch = epoch
+                # Train one epoch
+                avg_loss = trainer.train_epoch(train_loader)
+                loss_history.append(avg_loss)
+
+                deepcor.visualization.update_track(track,train_loader,model,config)
+
+                plt.close()
+                fig = deepcor.visualization.show_dahsboard_v1_marimo(track)
+                #mo.output.replace(fig)   # replace previous plot with the new one
+                mo.output.replace_at_index(fig,0)
+                #plt.close(fig)           # avoid duplicate/static matplotlib display
+
+            # Save outputs
+            #print("Saving model and results...")
+            # Save checkpoint
+            trainer.save_checkpoint(
+                os.path.join(output_dir, f'model_final_ens{ensemble}.pt'), 
+                config.training.n_epochs, 
+                avg_loss)
+
+            # Save track
+            deepcor.visualization.save_track(os.path.join(output_dir, f'track_S{s}_R{r}_rep_{ensemble}.pickle'), track)
+
+            deepcor.save_brain_signals(model,train_dataset,epi,gm,ofn=os.path.join(output_dir,f'signal_S{s}_R{r}_rep_{ensemble}.nii.gz'),batch_size=512,kind='FG')
+            #deepcor.save_brain_signals(model,train_dataset,epi,gm,ofn=os.path.join(output_dir,f'recon_S{s}_R{r}_rep_{ensemble}.nii.gz'),batch_size=512,kind='TG') # Optional
+            #deepcor.save_brain_signals(model,train_dataset,epi,gm,ofn=os.path.join(output_dir,f'noise_S{s}_R{r}_rep_{ensemble}.nii.gz'),batch_size=512,kind='BG') # Optional
+        except Exception as e:
+            print(f'error on ensemble {ensemble}, epoch {config.training.current_epoch}, skipping')
+            print(f'Actual error: {repr(e)}')
+            traceback.print_exc()
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _(os, output_dir, r, s):
+    # Once training is finished
+    signal_files = [os.path.join(output_dir,f) for f in os.listdir(output_dir) if all((f.startswith(f'signal_S{s}_R{r}_rep_'),f.endswith('.nii.gz')))]
+    track_files = [os.path.join(output_dir,f) for f in os.listdir(output_dir) if all((f.startswith(f'track_S{s}_R{r}_rep_'),f.endswith('.pickle')))]
+    signal_files.sort()
+    track_files.sort()
+    print('Ensemble of {} repetitions'.format(len(signal_files)))
+    return signal_files, track_files
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _(cf, deepcor, epi, gm, obs_list, os, output_dir, r, s, signal_files):
+    # Ensembling: Average the individual denoised files
+    signals_averaged = deepcor.average_signal_ensemble(signal_files,os.path.join(output_dir,f'signal_S{s}_R{r}_avg.nii.gz'))
+
+    # Save a copy of the Nodenoised
+    deepcor.data.array_to_brain(obs_list[:,0,:],epi,gm,os.path.join(output_dir,f'preproc_S{s}_R{r}.nii.gz'),inv_z_score=True,return_img=False)
+
+    # Save the CompCor version
+    compcor = deepcor.calc_and_save_compcor(epi,gm,cf,os.path.join(output_dir,f'compcor_S{s}_R{r}.nii.gz'),n_components=5,return_img=True)
+    return compcor, signals_averaged
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _(deepcor, epi, os, output_dir, r, s, sub_id):
+    run_post_analyses = True # Whether to run contrast and correlation analyses
+
+    if run_post_analyses:
+      events_fn = os.path.join(f'../Data/study-forrest-events/{sub_id}_ses-localizer_task-objectcategories_run-{r}_events.tsv')
+
+      X1 = deepcor.get_design_matrix(epi,events_fn)
+      X1
+
+    # If no post-training analyses needed, leave these empty
+    contrast_analyses = [] # Runs a voxelvise GLM and contrast analyses based on spec below
+    correlation_analyses = [] # Correlates each voxel with a specific target regressor
+
+    if run_post_analyses==True:
+      correlation_analyses.append(
+          {'corr_target' : X1['face'].values, # Correlate each voxel with this regressor
+          'filename' : os.path.join(output_dir,f'corr2face_S{s}_R{r}.nii.gz'), # Output filename
+          'plot' : True, # Automatically plot? If so specify a ROI
+          'ROI' : f'../Data/study-forrest-ROIs/rFFA_final_mask_{sub_id}_bin.nii.gz'}) # ROI for plotting (Can be None)
+
+
+      correlation_analyses.append(
+          {'corr_target' : X1[['house','scene']].values.mean(axis=1),
+          'filename' : os.path.join(output_dir,f'corr2place_S{s}_R{r}.nii.gz'),
+          'plot' : True,
+          'ROI' : f'../Data/study-forrest-ROIs/rPPA_final_mask_{sub_id}_bin.nii.gz'})
+
+      contrast_analyses.append(
+          {'contrast_vec' : [-1,5,-1,-1,-1,-1,0,0,0,0], # Contrast Vector spec
+          'design_matrix' : X1,
+          'filename' : os.path.join(output_dir,f'contrast_face_S{s}_R{r}.nii.gz'),
+          'plot' : True,
+          'ROI' : f'../Data/study-forrest-ROIs/rFFA_final_mask_{sub_id}_bin.nii.gz'})
+
+      contrast_analyses.append(
+          {'contrast_vec' : [-1,-1,2,-1,2,-1,0,0,0,0],
+          'design_matrix' : X1,
+          'filename' : os.path.join(output_dir,f'contrast_place_S{s}_R{r}.nii.gz'),
+          'plot' : True,
+          'ROI' : f'../Data/study-forrest-ROIs/rPPA_final_mask_{sub_id}_bin.nii.gz'})
+    return contrast_analyses, correlation_analyses, run_post_analyses
+
+
+@app.cell
+def _(
+    compcor,
+    correlation_analyses,
+    deepcor,
+    epi,
+    gm,
+    plt,
+    run_post_analyses,
+    signals_averaged,
+):
+    if run_post_analyses==True:
+        for analysis_spec_corr in correlation_analyses:
+            deepcor.run_correlation_analysis_from_spec(analysis_spec_corr,epi,compcor,signals_averaged,gm)
+    plt.show()
+    return
+
+
+@app.cell
+def _(
+    compcor,
+    contrast_analyses,
+    deepcor,
+    epi,
+    gm,
+    plt,
+    run_post_analyses,
+    signals_averaged,
+):
+    if run_post_analyses==True:
+        for analysis_spec_con in contrast_analyses:
+            deepcor.run_contrast_analysis_from_spec(analysis_spec_con,epi,compcor,signals_averaged,gm)
+    plt.show()
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _(deepcor, os, output_dir, plt, r, s, track_files):
+    import warnings
+    warnings.filterwarnings("ignore")
+    tracks = [deepcor.data.load_pickle(track_file) for track_file in track_files]
+    this_fig = None
+    for this_track in tracks:
+        try:
+            this_fig = deepcor.visualization.show_dahsboard_v1_marimo(this_track, fig=this_fig,save_fig=False)
+        except Exception as e:
+            print(f'bad track: {e}')
+    if this_fig is not None:
+        this_fig.savefig(os.path.join(output_dir, f'dashboard_S{s}_R{r}.png'), dpi=100, bbox_inches='tight')
+    plt.show()
     return
 
 

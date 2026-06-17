@@ -1,8 +1,9 @@
-HOSTNAME: g002
+../Data/DeepCor-Outputs/test-advanced-long-100-10
+HOSTNAME: g013
 CONDA_PREFIX: /home/aglinska/anaconda3/envs/deepcor
 /home/aglinska/anaconda3/envs/deepcor/bin/python
 /home/aglinska/anaconda3/envs/deepcor/bin/marimo
-Tue Jun 16 08:43:48 2026       
+Tue Jun 16 12:48:00 2026       
 +-----------------------------------------------------------------------------------------+
 | NVIDIA-SMI 575.57.08              Driver Version: 575.57.08      CUDA Version: 12.9     |
 |-----------------------------------------+------------------------+----------------------+
@@ -10,8 +11,8 @@ Tue Jun 16 08:43:48 2026
 | Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
 |                                         |                        |               MIG M. |
 |=========================================+========================+======================|
-|   0  Tesla V100-SXM2-16GB           Off |   00000000:18:00.0 Off |                    0 |
-| N/A   39C    P0             44W /  300W |       0MiB /  16384MiB |      0%      Default |
+|   0  NVIDIA L40S                    Off |   00000000:C9:00.0 Off |                  Off |
+| N/A   30C    P0             60W /  350W |       0MiB /  49140MiB |      0%      Default |
 |                                         |                        |                  N/A |
 +-----------------------------------------+------------------------+----------------------+
                                                                                          
@@ -22,6 +23,5 @@ Tue Jun 16 08:43:48 2026
 |=========================================================================================|
 |  No running processes found                                                             |
 +-----------------------------------------------------------------------------------------+
+Tue Jun 16 12:48:00 PM EDT 2026
 Watching /projects/sccn/andromeda1/aglinska/deepcor-fmri-toolbox/tests/02_StudyForrest-advanced-v2_mo.py for changes...
-File 02_StudyForrest-advanced-v2_mo.py changed. Re-exporting to studyforrest-S_0_R4.html
-File 02_StudyForrest-advanced-v2_mo.py changed. Re-exporting to studyforrest-S_0_R4.html

@@ -1,64 +1,0 @@
-cpu-bind=MASK - g002, task  0  0 [595103]: mask 0x20 set
-ModelConfig(latent_dims=(8, 8), hidden_dims=None, beta=0.01, gamma=0.0, delta=0.0, scale_MSE_GM=1000.0, scale_MSE_CF=1000.0, scale_MSE_FG=0.0, do_disentangle=True)
-
-
-TrainingConfig(n_epochs=50, batch_size=1024, learning_rate=0.001, optimizer='adamw', betas=(0.9, 0.999), eps=1e-08, max_grad_norm=5.0, n_repetitions=5)
-
-
-DataConfig(n_dummy_scans=0, apply_censoring=False, censoring_threshold=0.0, also_nearby_voxels=True, confound_columns=['X', 'Y', 'Z', 'RotX', 'RotY', 'RotZ'])
-
-
-DeepCorConfig(model=ModelConfig(latent_dims=(8, 8), hidden_dims=None, beta=0.01, gamma=0.0, delta=0.0, scale_MSE_GM=1000.0, scale_MSE_CF=1000.0, scale_MSE_FG=0.0, do_disentangle=True), training=TrainingConfig(n_epochs=50, batch_size=1024, learning_rate=0.001, optimizer='adamw', betas=(0.9, 0.999), eps=1e-08, max_grad_norm=5.0, n_repetitions=5), data=DataConfig(n_dummy_scans=0, apply_censoring=False, censoring_threshold=0.0, also_nearby_voxels=True, confound_columns=['X', 'Y', 'Z', 'RotX', 'RotY', 'RotZ']))
-
-
-script mode
-sub-01
-4
-test-advanced
-EPI: ../Data/fMRI-Data/studyforrest-fmriprep/sub-01/ses-localizer/func/sub-01_ses-localizer_task-objectcategories_run-4_bold_space-MNI152NLin2009cAsym_preproc.nii.gz
-Confounds: ../Data/fMRI-Data/studyforrest-fmriprep/sub-01/ses-localizer/func/sub-01_ses-localizer_task-objectcategories_run-4_bold_confounds.tsv
-output_dir: ../Data/DeepCor-Outputs/test-advanced/DeepCor-Forrest-S0-R4-cvae_v2
-obs_list_coords.shape: (41147, 4, 156)
-noi_list_coords.shape: (9105, 4, 156)
-upsampling noi_list_coords
-obs_list_coords.shape: (41147, 4, 156)
-noi_list_coords.shape: (41147, 4, 156)
-Ensemble of 5 repetitions
-  0%|          | 0/5 [00:00<?, ?it/s] 20%|██        | 1/5 [00:01<00:04,  1.06s/it] 40%|████      | 2/5 [00:01<00:02,  1.03it/s] 60%|██████    | 3/5 [00:02<00:01,  1.07it/s] 80%|████████  | 4/5 [00:03<00:00,  1.08it/s]100%|██████████| 5/5 [00:04<00:00,  1.09it/s]100%|██████████| 5/5 [00:04<00:00,  1.07it/s]
-signals averaged: 5
-saved as: ../Data/DeepCor-Outputs/test-advanced/DeepCor-Forrest-S0-R4-cvae_v2/corr2face_S0_R4_preproc.nii.gz
-saved as: ../Data/DeepCor-Outputs/test-advanced/DeepCor-Forrest-S0-R4-cvae_v2/corr2face_S0_R4_compcor.nii.gz
-saved as: ../Data/DeepCor-Outputs/test-advanced/DeepCor-Forrest-S0-R4-cvae_v2/corr2face_S0_R4_deepcor.nii.gz
-saved as: ../Data/DeepCor-Outputs/test-advanced/DeepCor-Forrest-S0-R4-cvae_v2/corr2place_S0_R4_preproc.nii.gz
-saved as: ../Data/DeepCor-Outputs/test-advanced/DeepCor-Forrest-S0-R4-cvae_v2/corr2place_S0_R4_compcor.nii.gz
-saved as: ../Data/DeepCor-Outputs/test-advanced/DeepCor-Forrest-S0-R4-cvae_v2/corr2place_S0_R4_deepcor.nii.gz
-saved as: ../Data/DeepCor-Outputs/test-advanced/DeepCor-Forrest-S0-R4-cvae_v2/contrast_face_0_R4_preproc.nii.gz
-saved as: ../Data/DeepCor-Outputs/test-advanced/DeepCor-Forrest-S0-R4-cvae_v2/contrast_face_0_R4_compcor.nii.gz
-saved as: ../Data/DeepCor-Outputs/test-advanced/DeepCor-Forrest-S0-R4-cvae_v2/contrast_face_0_R4_deepcor.nii.gz
-saved as: ../Data/DeepCor-Outputs/test-advanced/DeepCor-Forrest-S0-R4-cvae_v2/contrast_place_S0_R4_preproc.nii.gz
-saved as: ../Data/DeepCor-Outputs/test-advanced/DeepCor-Forrest-S0-R4-cvae_v2/contrast_place_S0_R4_compcor.nii.gz
-saved as: ../Data/DeepCor-Outputs/test-advanced/DeepCor-Forrest-S0-R4-cvae_v2/contrast_place_S0_R4_deepcor.nii.gz
-ModelConfig(latent_dims=(8, 8), hidden_dims=None, beta=0.01, gamma=0.0, delta=0.0, scale_MSE_GM=1000.0, scale_MSE_CF=1000.0, scale_MSE_FG=0.0, do_disentangle=True)
-
-
-TrainingConfig(n_epochs=100, batch_size=1024, learning_rate=0.001, optimizer='adamw', betas=(0.9, 0.999), eps=1e-08, max_grad_norm=5.0, n_repetitions=5)
-
-
-DataConfig(n_dummy_scans=0, apply_censoring=False, censoring_threshold=0.0, also_nearby_voxels=True, confound_columns=['X', 'Y', 'Z', 'RotX', 'RotY', 'RotZ'])
-
-
-DeepCorConfig(model=ModelConfig(latent_dims=(8, 8), hidden_dims=None, beta=0.01, gamma=0.0, delta=0.0, scale_MSE_GM=1000.0, scale_MSE_CF=1000.0, scale_MSE_FG=0.0, do_disentangle=True), training=TrainingConfig(n_epochs=100, batch_size=1024, learning_rate=0.001, optimizer='adamw', betas=(0.9, 0.999), eps=1e-08, max_grad_norm=5.0, n_repetitions=5), data=DataConfig(n_dummy_scans=0, apply_censoring=False, censoring_threshold=0.0, also_nearby_voxels=True, confound_columns=['X', 'Y', 'Z', 'RotX', 'RotY', 'RotZ']))
-
-
-script mode
-sub-01
-4
-test-advanced
-EPI: ../Data/fMRI-Data/studyforrest-fmriprep/sub-01/ses-localizer/func/sub-01_ses-localizer_task-objectcategories_run-4_bold_space-MNI152NLin2009cAsym_preproc.nii.gz
-Confounds: ../Data/fMRI-Data/studyforrest-fmriprep/sub-01/ses-localizer/func/sub-01_ses-localizer_task-objectcategories_run-4_bold_confounds.tsv
-output_dir: ../Data/DeepCor-Outputs/test-advanced/DeepCor-Forrest-S0-R4-cvae_v2
-obs_list_coords.shape: (41147, 4, 156)
-noi_list_coords.shape: (9105, 4, 156)
-upsampling noi_list_coords
-obs_list_coords.shape: (41147, 4, 156)
-noi_list_coords.shape: (41147, 4, 156)
