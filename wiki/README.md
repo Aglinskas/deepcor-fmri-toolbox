@@ -29,13 +29,13 @@ If you just want to denoise a run, read these pages in order:
 | [Data preparation](data_preparation.md) | Inputs, formats, masks, confounds, fMRIPrep |
 | [High-level API](usage_high_level_api.md) | `DeepCorDenoiser` / `DeepCor` usage |
 | [Advanced / low-level API](usage_advanced_api.md) | Models, datasets, `Trainer` |
-| [What CVAEs are and how DeepCor works](CVAEs.md) *(planned)* | Contrastive VAEs, disentanglement, references |
+| [What CVAEs are and how DeepCor works](CVAEs.md) | Contrastive VAEs, disentanglement, references |
 | [Model versions (v1 vs v2)](model_versions.md) | Differences and when to use each |
 | [Configuration reference](configuration.md) | Every config parameter, defaults, tuning |
 | [Outputs explained](outputs.md) | The files a run produces and what they mean |
 | [Batch jobs](batch_jobs.md) | SLURM scripts, papermill & marimo notebook runs |
-| [Troubleshooting](troubleshooting.md) *(planned)* | Install (torch/ANTsPy), CUDA, common errors |
-| [Glossary](glossary.md) *(planned)* | ROI, RONI, CVAE, CompCor, confounds, etc. |
+| [Troubleshooting](troubleshooting.md) | Install (torch/ANTsPy), CUDA, common errors |
+| [Glossary](glossary.md) | ROI, RONI, CVAE, CompCor, confounds, etc. |
 | [Backwards compatibility](backwards_compatibility.md) | How model versions are added without breakage |
 
 *Pages marked "planned" are not written yet.*
