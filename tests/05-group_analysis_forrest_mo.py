@@ -22,9 +22,16 @@ def _(mo, os):
 
 
 @app.cell
+def _(np, os):
+    np.array(os.listdir('../Data/DeepCor-Outputs/'))
+    return
+
+
+@app.cell
 def _():
-    analysis_dir = '../Data/DeepCor-Outputs/test-advanced'
-    return (analysis_dir,)
+    analysis_dir = '../Data/DeepCor-Outputs/deepcor-v1-forrest-100-20'
+    folder_fn = 'DeepCor-Forrest-S{s}-R{r}-cvae_v1'
+    return analysis_dir, folder_fn
 
 
 @app.cell
@@ -32,11 +39,9 @@ def _():
     nsubs = 14
     nruns = 4
 
-    folder_fn = 'DeepCor-Forrest-S{s}-R{r}-cvae_v2'
-
     ffa_roi_fn = '../Data/study-forrest-ROIs/rFFA_final_mask_{sub}_bin.nii.gz'
     ppa_roi_fn = '../Data/study-forrest-ROIs/rPPA.nii.gz_final_mask_{sub}_bin.nii.gz'
-    return ffa_roi_fn, folder_fn, nsubs, ppa_roi_fn
+    return ffa_roi_fn, nsubs, ppa_roi_fn
 
 
 @app.cell
@@ -86,7 +91,7 @@ def _(analysis_dir, ffa_roi_fn, folder_fn, get_roi_data, os, ppa_roi_fn, subs):
             im_fn = os.path.join(analysis_dir,folder_fn.format(s=s,r=r),f'corr2place_S{s}_R{r}_{kind}.nii.gz')
             roi_fn = ppa_roi_fn.format(sub=subs[s])
         elif all((task=='face',metric=='contrast')):
-            im_fn = os.path.join(analysis_dir,folder_fn.format(s=s,r=r),f'contrast_face_{s}_R{r}_{kind}.nii.gz')
+            im_fn = os.path.join(analysis_dir,folder_fn.format(s=s,r=r),f'contrast_face_S{s}_R{r}_{kind}.nii.gz')
             roi_fn = ffa_roi_fn.format(sub=subs[s])
         elif all((task=='place',metric=='contrast')):
             im_fn = os.path.join(analysis_dir,folder_fn.format(s=s,r=r),f'contrast_place_S{s}_R{r}_{kind}.nii.gz')
@@ -122,6 +127,8 @@ def _(get_forrest_roi_data, np, nsubs):
     res_con_place_preproc = np.array([[get_forrest_roi_data(s,r,task='place',metric='contrast',kind='preproc') for r in [1,2,3,4]] for s in range(nsubs)])
     res_con_place_compcor = np.array([[get_forrest_roi_data(s,r,task='place',metric='contrast',kind='compcor') for r in [1,2,3,4]] for s in range(nsubs)])
     res_con_place_deepcor = np.array([[get_forrest_roi_data(s,r,task='place',metric='contrast',kind='deepcor') for r in [1,2,3,4]] for s in range(nsubs)])
+
+    res_cor_face_deepcor
     return (
         res_con_face_compcor,
         res_con_face_deepcor,
@@ -139,8 +146,7 @@ def _(get_forrest_roi_data, np, nsubs):
 
 
 @app.cell
-def _(res_cor_face_deepcor):
-    res_cor_face_deepcor
+def _():
     return
 
 

@@ -14,18 +14,41 @@ DeepCor is a Python package for denoising fMRI data using contrastive variationa
 
 ## Installation
 
+DeepCor depends on PyTorch and ANTsPy, so we recommend installing it into a
+fresh, isolated environment. Python 3.10–3.12 is recommended.
+
+### Option A — conda (recommended)
+
+```bash
+conda create -n deepcor python=3.11
+conda activate deepcor
+
+git clone https://github.com/Aglinskas/deepcor-fmri-toolbox.git
+cd deepcor-fmri-toolbox
+pip install -e .
+```
+
+### Option B — venv (no conda needed)
+
+```bash
+python3 -m venv deepcor-env
+source deepcor-env/bin/activate     # Windows: deepcor-env\Scripts\activate
+
+git clone https://github.com/Aglinskas/deepcor-fmri-toolbox.git
+cd deepcor-fmri-toolbox
+pip install -e .
+```
+
+> **Note:** This is a large install (several GB) because PyTorch ships with
+> GPU/CUDA libraries. On a Linux machine with an NVIDIA GPU it works out of the
+> box. If you only have a CPU, or need a specific CUDA version, install the
+> matching PyTorch build first from https://pytorch.org/get-started/locally/
+> *before* running `pip install -e .`.
+
 ### From PyPI (coming soon)
 
 ```bash
 pip install deepcor
-```
-
-### From source
-
-```bash
-git clone https://github.com/Aglinskas/deepcor-fmri-toolbox.git
-cd deepcor-fmri-toolbox
-pip install -e .
 ```
 
 ## Quick Start
@@ -49,14 +72,17 @@ denoiser = DeepCorDenoiser(
 )
 
 # Denoise your fMRI data
-output_path = denoiser.fit_denoise(
-    epi_path='data.nii.gz',
-    gm_mask_path='gm_mask.nii',
-    cf_mask_path='cf_mask.nii',
-    confounds_path='confounds.tsv',
+result = denoiser.fit_denoise(
+    epi='data.nii.gz',
+    gm_mask='gm_mask.nii',
+    cf_mask='cf_mask.nii',
+    confounds='confounds.tsv',
     output_dir='output/',
     verbose=True
 )
+
+# `result` is a DeepCorResult; the denoised file path is on `result.denoised_path`
+print(result.denoised_path)
 ```
 
 ### Low-Level API (For researchers)
@@ -110,16 +136,20 @@ deepcor/
 ```
 
 The sections below break down each module and list the functions/classes it
-exposes, with a brief note on what each one does.
+exposes, with a brief note on what each one does. Click any file name to view
+its source on GitHub.
 
-### `deepcor/pipeline.py` — high-level API
+### [`deepcor/pipeline.py`](https://github.com/Aglinskas/deepcor-fmri-toolbox/blob/main/deepcor/pipeline.py) — high-level API
 
 - **`DeepCorDenoiser`** — scikit-learn-style high-level denoiser; the main entry point for most users.
-  - `.fit_denoise()` — fit the model on an EPI run and write the denoised output.
-  - `.save()` — save the trained ensemble of models.
-  - `.load()` — load previously trained models.
+  - `.fit()` — train the ensemble of models on an EPI run (without writing output).
+  - `.denoise()` — average the trained ensemble and write the denoised output (plus a preprocessed copy and a CompCor comparison).
+  - `.fit_denoise()` — convenience wrapper that runs `.fit()` then `.denoise()`.
+  - `.save()` — save the trained ensemble of models to disk.
+- **`DeepCorResult`** — dataclass holding the artifacts of a run (`denoised_path`, `preproc_path`, `compcor_path`, `output_dir`, `signal_files`, `tracks`); usable directly as a path string.
+- **`DeepCor`** — friendlier alias for `DeepCorDenoiser`.
 
-### `deepcor/config.py` — configuration
+### [`deepcor/config.py`](https://github.com/Aglinskas/deepcor-fmri-toolbox/blob/main/deepcor/config.py) — configuration
 
 - **`ModelConfig`** — dataclass for model architecture settings (latent dims, beta, etc.).
 - **`TrainingConfig`** — dataclass for training settings (epochs, batch size, learning rate).
@@ -127,9 +157,9 @@ exposes, with a brief note on what each one does.
 - **`DeepCorConfig`** — top-level config bundling the three configs above.
 - `get_default_config()` — return a `DeepCorConfig` populated with defaults.
 
-### `deepcor/models/` — model architectures
+### [`deepcor/models/`](https://github.com/Aglinskas/deepcor-fmri-toolbox/tree/main/deepcor/models) — model architectures
 
-**`cvae.py`** — current (v2) confound-aware Contrastive VAE.
+[**`cvae.py`**](https://github.com/Aglinskas/deepcor-fmri-toolbox/blob/main/deepcor/models/cvae.py) — current (v2) confound-aware Contrastive VAE.
 - **`CVAE`** — Contrastive VAE for fMRI denoising with disentangled signal/noise latent spaces.
   - `.encode_z()` / `.encode_s()` — encode input to the signal / noise latent space.
   - `.encode()` — encode input to both latent spaces.
@@ -142,7 +172,7 @@ exposes, with a brief note on what each one does.
 - **`GradientReversalFunction`** / **`GradientReversalLayer`** — gradient reversal used for adversarial confound removal.
 - `compute_in()`, `compute_in_size()`, `compute_out_size()`, `compute_padding()` — helpers that compute conv/deconv sizes and padding for the architecture.
 
-**`cvae_v1.py`** — original CVAE without confound conditioning.
+[**`cvae_v1.py`**](https://github.com/Aglinskas/deepcor-fmri-toolbox/blob/main/deepcor/models/cvae_v1.py) — original CVAE without confound conditioning.
 - **`CVAE_V1`** — original (v1) cVAE model.
   - `.encode_z()` / `.encode_s()` — encode to signal / noise latent space.
   - `.decode()` — decode concatenated latent codes to a time series.
@@ -152,22 +182,22 @@ exposes, with a brief note on what each one does.
   - `.sample()` — sample from the latent prior and decode.
   - `.generate()` — produce denoised output (foreground branch).
 
-**`base.py`**
+[**`base.py`**](https://github.com/Aglinskas/deepcor-fmri-toolbox/blob/main/deepcor/models/base.py)
 - **`BaseModel`** — abstract base class defining the model interface (`encode`, `decode`, `forward`, `loss_function`, `generate`, `reparameterize`).
 
-**`registry.py`**
+[**`registry.py`**](https://github.com/Aglinskas/deepcor-fmri-toolbox/blob/main/deepcor/models/registry.py)
 - `get_model()` — instantiate a model by version string (`'v1'`, `'v2'`, `'latest'`).
 - `list_models()` — list available model versions.
 
-### `deepcor/data/` — data loading and preprocessing
+### [`deepcor/data/`](https://github.com/Aglinskas/deepcor-fmri-toolbox/tree/main/deepcor/data) — data loading and preprocessing
 
-**`loaders.py`**
+[**`loaders.py`**](https://github.com/Aglinskas/deepcor-fmri-toolbox/blob/main/deepcor/data/loaders.py)
 - `get_confounds()` — load motion confounds from an fMRIPrep TSV file.
 - `plot_timeseries()` — plot ROI and RONI timeseries.
 - `array_to_brain()` — convert a voxel array back to a brain volume (NIfTI).
 - `load_pickle()` / `save_pickle()` — pickle I/O helpers.
 
-**`preprocessing.py`**
+[**`preprocessing.py`**](https://github.com/Aglinskas/deepcor-fmri-toolbox/blob/main/deepcor/data/preprocessing.py)
 - `get_roi_and_roni()` — build ROI (gray matter) and RONI (non-gray-matter) masks.
 - `get_obs_noi_list_coords()` — extract observation/noise voxel lists with coordinates.
 - `get_obs_noi_list()` — extract observation/noise voxel lists.
@@ -175,13 +205,14 @@ exposes, with a brief note on what each one does.
 - `censor_and_interpolate()` — censor and interpolate bad timepoints.
 - `apply_frame_censoring()` — apply motion-based frame censoring to the data.
 - `remove_std0()` — drop voxels with zero standard deviation.
+- `regress_from_data()` — regress a set of nuisance regressors out of the data.
 
-**`datasets.py`**
+[**`datasets.py`**](https://github.com/Aglinskas/deepcor-fmri-toolbox/blob/main/deepcor/data/datasets.py)
 - **`TrainDataset`** — PyTorch `Dataset` pairing observation (ROI) and noise (RONI) samples.
 
-### `deepcor/training/` — training utilities
+### [`deepcor/training/`](https://github.com/Aglinskas/deepcor-fmri-toolbox/tree/main/deepcor/training) — training utilities
 
-**`trainer.py`**
+[**`trainer.py`**](https://github.com/Aglinskas/deepcor-fmri-toolbox/blob/main/deepcor/training/trainer.py)
 - **`Trainer`** — training loop, optimization, and checkpointing.
   - `.train_epoch()` — run a single training epoch.
   - `.fit()` — train the model for N epochs.
@@ -189,50 +220,51 @@ exposes, with a brief note on what each one does.
 - `save_model()` — legacy checkpoint saver kept for backward compatibility.
 - `save_brain_signals()` — generate and save denoised brain signals from a trained model.
 
-**`callbacks.py`**
+[**`callbacks.py`**](https://github.com/Aglinskas/deepcor-fmri-toolbox/blob/main/deepcor/training/callbacks.py)
 - **`TrackingCallback`** — record training metrics into a tracking dict.
 - **`CheckpointCallback`** — periodically save checkpoints during training.
 - **`EarlyStoppingCallback`** — stop training when loss stops improving.
 
-### `deepcor/analysis/` — analysis tools
+### [`deepcor/analysis/`](https://github.com/Aglinskas/deepcor-fmri-toolbox/tree/main/deepcor/analysis) — analysis tools
 
-**`contrasts.py`**
+[**`contrasts.py`**](https://github.com/Aglinskas/deepcor-fmri-toolbox/blob/main/deepcor/analysis/contrasts.py)
 - `get_design_matrix()` — build a first-level GLM design matrix from an events file.
 - `get_contrast_val()` — compute per-voxel contrast values.
 - `calc_contrast_map()` — compute a whole-brain contrast map.
 - `run_contrast_analysis_from_spec()` — run a contrast analysis from a spec dictionary.
 
-**`correlations.py`**
+[**`correlations.py`**](https://github.com/Aglinskas/deepcor-fmri-toolbox/blob/main/deepcor/analysis/correlations.py)
 - `correlate_columns()` — Pearson correlation between matching columns of two matrices.
 - `calc_corr_map()` — compute a correlation map between an image and a target.
 - `run_correlation_analysis_from_spec()` — run a correlation analysis from a spec dictionary.
 
-**`metrics.py`**
+[**`metrics.py`**](https://github.com/Aglinskas/deepcor-fmri-toolbox/blob/main/deepcor/analysis/metrics.py)
 - `calc_mse()` — variance explained (R²) between two arrays.
 - `calc_and_save_compcor()` — compute and save CompCor-denoised data for comparison.
 - `average_signal_ensemble()` — average multiple denoised signal files into an ensemble.
 - `correlation()` — correlation between two vectors.
 
-### `deepcor/visualization/` — visualization tools
+### [`deepcor/visualization/`](https://github.com/Aglinskas/deepcor-fmri-toolbox/tree/main/deepcor/visualization) — visualization tools
 
-**`dashboard.py`**
+[**`dashboard.py`**](https://github.com/Aglinskas/deepcor-fmri-toolbox/blob/main/deepcor/visualization/dashboard.py)
 - `get_varexp()` — compute variance explained between model input and output.
-- `update_track()` — update the tracking dict with current training state/metrics.
 - `init_track()` — initialize a tracking dictionary for a model version.
+- `update_track()` — update the tracking dict with current training state/metrics.
 - `save_track()` — save a tracking dictionary to file.
-- `show_dahsboard_v1_marimo()` — render the V1 training dashboard (marimo).
-- `show_dahsboard_v2_marimo()` — render the V2 (confound-aware) training dashboard (marimo).
-- `show_dahsboard_marimo()` — render the dashboard for the model version in the track (latest by default).
+- `format_progress_title()` — build a progress/title string from the current track.
+- `show_dahsboard_v1_marimo()` / `show_dahsboard_v2_marimo()` — render the V1 / V2 training dashboard as a matplotlib figure (for marimo notebooks).
+- `show_dahsboard_v1_jupyter()` / `show_dahsboard_v2_jupyter()` — same dashboards for Jupyter notebooks.
+- `show_dahsboard_marimo()` / `show_dahsboard_jupyter()` — dispatch to the right dashboard for the model version in the track (latest by default).
 
-**`plots.py`**
+[**`plots.py`**](https://github.com/Aglinskas/deepcor-fmri-toolbox/blob/main/deepcor/visualization/plots.py)
 - `plot_timeseries()` — plot ROI/RONI timeseries.
 
-### `deepcor/utils/` — utilities
+### [`deepcor/utils/`](https://github.com/Aglinskas/deepcor-fmri-toolbox/tree/main/deepcor/utils) — utilities
 
-**`io.py`**
+[**`io.py`**](https://github.com/Aglinskas/deepcor-fmri-toolbox/blob/main/deepcor/utils/io.py)
 - `safe_mkdir()` — create a directory if it doesn't already exist.
 
-**`helpers.py`**
+[**`helpers.py`**](https://github.com/Aglinskas/deepcor-fmri-toolbox/blob/main/deepcor/utils/helpers.py)
 - `check_gpu_and_speedup()` — check GPU availability and benchmark speedup vs CPU.
 
 ## Key Components
@@ -281,9 +313,10 @@ denoiser = DeepCorDenoiser(config=config)
 
 ## Examples
 
-See the `examples/` directory for:
-- `quickstart.py`: Simple usage example
-- `advanced_usage.py`: Full pipeline with analysis
+See the [`examples/`](https://github.com/Aglinskas/deepcor-fmri-toolbox/tree/main/examples) directory for:
+- [`01-quickstart_mo.py`](https://github.com/Aglinskas/deepcor-fmri-toolbox/blob/main/examples/01-quickstart_mo.py): simple usage example (marimo notebook)
+- [`advanced_usage.py`](https://github.com/Aglinskas/deepcor-fmri-toolbox/blob/main/examples/advanced_usage.py): full pipeline with analysis
+- [`02-Advanced-Usage.ipynb`](https://github.com/Aglinskas/deepcor-fmri-toolbox/blob/main/examples/02-Advanced-Usage.ipynb) and [`03-StudyForrest.ipynb`](https://github.com/Aglinskas/deepcor-fmri-toolbox/blob/main/examples/03-StudyForrest.ipynb): worked Jupyter notebook examples
 
 ## Requirements
 
