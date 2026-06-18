@@ -155,4 +155,4 @@ The full list of config fields and their defaults will live on the
 
 **See also:** [Data preparation](data_preparation.md) ·
 [project README](../README.md) ·
-[`examples/01-quickstart_mo.py`](https://github.com/Aglinskas/deepcor-fmri-toolbox/blob/main/examples/01-quickstart_mo.py)
+[`examples/01_quickstart_highlevel.py`](https://github.com/Aglinskas/deepcor-fmri-toolbox/blob/main/examples/01_quickstart_highlevel.py)

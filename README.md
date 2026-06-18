@@ -313,10 +313,10 @@ denoiser = DeepCorDenoiser(config=config)
 
 ## Examples
 
-See the [`examples/`](https://github.com/Aglinskas/deepcor-fmri-toolbox/tree/main/examples) directory for:
-- [`01-quickstart_mo.py`](https://github.com/Aglinskas/deepcor-fmri-toolbox/blob/main/examples/01-quickstart_mo.py): simple usage example (marimo notebook)
-- [`advanced_usage.py`](https://github.com/Aglinskas/deepcor-fmri-toolbox/blob/main/examples/advanced_usage.py): full pipeline with analysis
-- [`02-Advanced-Usage.ipynb`](https://github.com/Aglinskas/deepcor-fmri-toolbox/blob/main/examples/02-Advanced-Usage.ipynb) and [`03-StudyForrest.ipynb`](https://github.com/Aglinskas/deepcor-fmri-toolbox/blob/main/examples/03-StudyForrest.ipynb): worked Jupyter notebook examples
+See the [`examples/`](https://github.com/Aglinskas/deepcor-fmri-toolbox/tree/main/examples) directory (each script has editable paths and hyperparameters at the top):
+- [`01_quickstart_highlevel.py`](https://github.com/Aglinskas/deepcor-fmri-toolbox/blob/main/examples/01_quickstart_highlevel.py): denoise a single subject with the high-level API
+- [`02_lowlevel_api.py`](https://github.com/Aglinskas/deepcor-fmri-toolbox/blob/main/examples/02_lowlevel_api.py): build the pipeline by hand (low-level API), v2 and v1
+- [`03_batch_run_subject.py`](https://github.com/Aglinskas/deepcor-fmri-toolbox/blob/main/examples/03_batch_run_subject.py) + [`03_slurm_batch_job.sh`](https://github.com/Aglinskas/deepcor-fmri-toolbox/blob/main/examples/03_slurm_batch_job.sh): run a whole study as a SLURM array job
 
 ## Requirements
 
