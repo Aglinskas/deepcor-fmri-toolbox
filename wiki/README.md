@@ -47,8 +47,9 @@ DeepCor needs three spatial inputs in the **same space and resolution**:
 
 - a **4D functional (EPI) image** — the run you want to denoise;
 - a **gray-matter mask** — the **ROI** (region of interest), where signal lives;
-- a **noise mask** — the **RONI** (region of *no* interest), typically CSF /
-  non-gray-matter tissue, used to estimate structured noise.
+- a **confounds mask** (`cf_mask`) — the **RONI** (region of *no* interest),
+  usually a white-matter + CSF mask (aCompCor-style), used to estimate
+  structured noise.
 
 The current model (`v2`) also takes **motion confounds** (an fMRIPrep confounds
 TSV). It trains a small ensemble of CVAEs, then averages them to produce a

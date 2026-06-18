@@ -20,7 +20,7 @@ denoiser = DeepCor(model_version="latest")
 result = denoiser.fit_denoise(
     epi="sub-01_task-rest_desc-preproc_bold.nii.gz",
     gm_mask="sub-01_label-GM_mask.nii.gz",
-    cf_mask="sub-01_label-CSF_mask.nii.gz",
+    cf_mask="sub-01_label-WMCSF_mask.nii.gz",   # confounds mask: white matter + CSF
     confounds="sub-01_task-rest_desc-confounds_timeseries.tsv",
     output_dir="derivatives/deepcor/sub-01",
 )
@@ -57,7 +57,7 @@ likely to touch:
 | --- | --- | --- | --- |
 | `epi` | **Yes** | — | 4D functional image (path or ANTs image). |
 | `gm_mask` | **Yes** | — | Gray-matter ROI mask. |
-| `cf_mask` | **Yes** | — | Noise/RONI mask (e.g. CSF). |
+| `cf_mask` | **Yes** | — | Confounds/RONI mask — usually white-matter + CSF (aCompCor-style). |
 | `confounds` | **For `v2`/`latest`** | `None` | fMRIPrep confounds TSV (or `(n_conf, nTR)` array). Required for confound-aware models, ignored for `v1`. |
 | `output_dir` | No | `../Data/DeepCor-Outputs` | Where checkpoints, tracks, signal NIfTIs and the denoised output are written (created if missing). |
 | `dashboard` | No | `"save"` | `"save"` (write a dashboard PNG each epoch), `"jupyter"` (also display it live in a notebook), or `None` (no dashboard). |

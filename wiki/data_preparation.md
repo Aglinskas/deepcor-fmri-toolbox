@@ -17,12 +17,20 @@ model) **one confounds file**:
 | --- | --- | --- |
 | `epi` | the data to denoise | A **4D functional (EPI) image**, with time as the last dimension |
 | `gm_mask` | **ROI** (region of interest) | A **gray-matter mask** — voxels where the signal of interest lives |
-| `cf_mask` | **RONI** (region of *no* interest) | A **noise mask** — typically CSF / non-gray-matter tissue used to estimate structured noise |
+| `cf_mask` | **RONI** (region of *no* interest) | The **confounds mask** — usually a **white-matter + CSF** mask, used to estimate structured noise |
 | `confounds` | motion regressors | An fMRIPrep **confounds TSV** (required for `v2`/`latest`, ignored for `v1`) |
 
 DeepCor learns what "noise" looks like from the RONI (where there should be no
 signal of interest) and uses that to clean the ROI. The two masks therefore
 play very different roles — don't swap them.
+
+> **What `cf_mask` means.** `cf` stands for **confounds** (the confounds mask).
+> In practice this is typically a combined **white-matter + CSF** mask — the
+> same kind of noise region-of-interest used by **aCompCor**, where signals
+> from white matter and CSF are treated as nuisance components rather than
+> signal of interest. See Behzadi et al. (2007), *A component based noise
+> correction method (CompCor) for BOLD and perfusion based fMRI*:
+> https://pmc.ncbi.nlm.nih.gov/articles/PMC2214855/
 
 ## Hard requirements (these will error or give garbage if wrong)
 
@@ -78,10 +86,12 @@ almost everything:
   `*_desc-preproc_bold.nii.gz`.
 - **Confounds** — `*_desc-confounds_timeseries.tsv` (contains the `trans_*` /
   `rot_*` columns above).
-- **Masks** — derive the gray-matter ROI and the CSF/noise RONI from fMRIPrep's
-  tissue probability maps (e.g. `*_label-GM_probseg.nii.gz` and
-  `*_label-CSF_probseg.nii.gz`), thresholded to binary and **resampled to the
-  BOLD grid**. Ensure the resulting GM and CSF masks do not overlap.
+- **Masks** — derive the gray-matter ROI and the white-matter + CSF confounds
+  RONI from fMRIPrep's tissue probability maps. Threshold
+  `*_label-GM_probseg.nii.gz` to binary for the ROI, and combine
+  `*_label-WM_probseg.nii.gz` **and** `*_label-CSF_probseg.nii.gz` (thresholded
+  to binary) for the `cf_mask`. **Resample both to the BOLD grid**, and ensure
+  the GM ROI and the WM+CSF RONI do not overlap.
 
 ## Optional preprocessing knobs
 
