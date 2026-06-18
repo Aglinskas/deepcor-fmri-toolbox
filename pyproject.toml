@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=45", "wheel", "setuptools_scm>=6.2"]
+requires = ["setuptools>=77", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "Deep Learning-based Denoising for fMRI"
 readme = "README.md"
 requires-python = ">=3.7"
-license = {text = "MIT"}
+license = "MIT"
 authors = [
     {name = "DeepCor Development Team"}
 ]
@@ -18,7 +18,6 @@ classifiers = [
     "Intended Audience :: Science/Research",
     "Topic :: Scientific/Engineering :: Medical Science Apps.",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
-    "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
@@ -29,11 +28,8 @@ classifiers = [
 dependencies = [
     "numpy>=1.19.0",
     "pandas>=1.1.0",
-    "scipy>=1.5.0",
     "matplotlib>=3.3.0",
-    "seaborn>=0.11.0",
     "torch>=1.9.0",
-    "torchvision>=0.10.0",
     "antspyx>=0.3.0",
     "nilearn>=0.8.0",
     "scikit-learn>=0.24.0",
@@ -51,10 +47,15 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/yourusername/deepcor-fmri-toolbox"
+Homepage = "https://github.com/Aglinskas/deepcor-fmri-toolbox"
 Documentation = "https://deepcor.readthedocs.io"
-Repository = "https://github.com/yourusername/deepcor-fmri-toolbox"
-"Bug Tracker" = "https://github.com/yourusername/deepcor-fmri-toolbox/issues"
+Repository = "https://github.com/Aglinskas/deepcor-fmri-toolbox"
+"Bug Tracker" = "https://github.com/Aglinskas/deepcor-fmri-toolbox/issues"
+
+# Only ship the `deepcor` package; `wiki/`, `tests/`, `examples/` are not
+# installable packages, so restrict automatic discovery to deepcor.*
+[tool.setuptools.packages.find]
+include = ["deepcor*"]
 
 [tool.black]
 line-length = 88

@@ -5,10 +5,10 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --gres=gpu:1
-#SBATCH --time=01:00:00
+#SBATCH --time=48:00:00
 #SBATCH --mem=32gb
-#SBATCH --partition=short
-#SBATCH --array=0-2
+#SBATCH --partition=medium
+#SBATCH --array=0-13
 
 
 #rm -rf $deepcor_dir$analysis_name # To clear previous ouputs
@@ -17,10 +17,10 @@
 
 deepcor_dir=../Data/DeepCor-Outputs/
 notebook_name=02_StudyForrest-advanced-v1
-analysis_name=test-advanced-jupyter-V1
+analysis_name=deepcor-v1-forrest-100-20
 
-param_epochs=5
-param_repetitions=5
+param_epochs=100
+param_repetitions=20
 
 
 echo $deepcor_dir$analysis_name

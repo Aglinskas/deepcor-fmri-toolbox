@@ -23,7 +23,7 @@ pip install deepcor
 ### From source
 
 ```bash
-git clone https://github.com/yourusername/deepcor-fmri-toolbox.git
+git clone https://github.com/Aglinskas/deepcor-fmri-toolbox.git
 cd deepcor-fmri-toolbox
 pip install -e .
 ```
@@ -93,9 +93,8 @@ denoised = model.generate(data)
 
 ```
 deepcor/
-├── setup.py / pyproject.toml
+├── pyproject.toml
 ├── README.md
-├── requirements.txt
 ├── deepcor/
 │   ├── __init__.py
 │   ├── models/              # Model architectures
@@ -293,7 +292,7 @@ See the `examples/` directory for:
 - ANTsPy >= 0.3.0
 - nilearn >= 0.8.0
 - scikit-learn >= 0.24.0
-- numpy, pandas, scipy, matplotlib, seaborn, tqdm
+- numpy, pandas, matplotlib, tqdm, IPython
 
 ## Citation
 
