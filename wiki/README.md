@@ -32,9 +32,9 @@ If you just want to denoise a run, read these pages in order:
 | [Advanced / low-level API](usage_advanced_api.md) *(planned)* | Models, datasets, `Trainer` |
 | [What CVAEs are and how DeepCor works](CVAEs.md) *(planned)* | Contrastive VAEs, disentanglement, references |
 | [Model versions (v1 vs v2)](model_versions.md) *(planned)* | Differences and when to use each |
-| [Configuration reference](configuration.md) *(planned)* | Every config parameter, defaults, tuning |
+| [Configuration reference](configuration.md) | Every config parameter, defaults, tuning |
 | [Outputs explained](outputs.md) *(planned)* | The files a run produces and what they mean |
-| [Batch jobs](batch_jobs.md) *(planned)* | SLURM scripts and papermill notebook runs |
+| [Batch jobs](batch_jobs.md) | SLURM scripts, papermill & marimo notebook runs |
 | [Troubleshooting](troubleshooting.md) *(planned)* | Install (torch/ANTsPy), CUDA, common errors |
 | [Glossary](glossary.md) *(planned)* | ROI, RONI, CVAE, CompCor, confounds, etc. |
 | [Backwards compatibility](backwards_compatibility.md) | How model versions are added without breakage |

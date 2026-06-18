@@ -70,7 +70,7 @@ loader auto-detects the column naming convention in your TSV:
 If neither set is present, you'll get a clear error listing the columns that
 *are* available. To use a different/explicit set of columns, you can supply them
 yourself (see `confound_columns` in the
-[configuration reference](configuration.md), *planned*) or pass a pre-built
+[configuration reference](configuration.md)) or pass a pre-built
 confounds array.
 
 > `confounds` is **required for `v2`/`latest`** (the confound-aware model) and

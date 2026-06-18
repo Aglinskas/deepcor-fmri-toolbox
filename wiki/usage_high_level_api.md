@@ -47,7 +47,7 @@ likely to touch:
 | `batch_size` | `1024` | Training batch size. |
 | `learning_rate` | `0.001` | Optimizer learning rate. |
 | `n_repetitions` | `20` | How many models in the ensemble (averaged at the end). More = more stable, but slower. |
-| `config` | `None` | A full `DeepCorConfig` (overrides the scalar args above). See [configuration](configuration.md) *(planned)*. |
+| `config` | `None` | A full `DeepCorConfig` (overrides the scalar args above). See [configuration](configuration.md). |
 | `device` | `None` | torch device; defaults to GPU if available, else CPU. |
 | `verbose` | `True` | Print device/progress info. |
 
@@ -130,7 +130,7 @@ notebook, pass `dashboard="jupyter"` to render it live in the cell. Pass
 - **`n_epochs`** controls how long each member trains.
 - **`latent_dims`** and **`beta`** (a `config`/`ModelConfig` setting) shape the
   signal/noise disentanglement. Defaults are a good starting point; see the
-  [configuration reference](configuration.md) *(planned)* before changing them.
+  [configuration reference](configuration.md) before changing them.
 
 ## Full configuration
 
@@ -149,7 +149,7 @@ denoiser = DeepCor(model_version="latest", config=config)
 ```
 
 The full list of config fields and their defaults will live on the
-[configuration reference](configuration.md) page *(planned)*.
+[configuration reference](configuration.md) page.
 
 ---
 
