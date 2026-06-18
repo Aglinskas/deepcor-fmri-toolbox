@@ -168,8 +168,8 @@ The example SLURM scripts share a few conventions worth copying:
 Each run writes its denoised image (plus a preprocessed copy, a CompCor
 comparison, and per-repetition signal files) into its `output_dir`. The
 [high-level API page](usage_high_level_api.md#what-you-get-back) lists the
-`DeepCorResult` fields; a dedicated [outputs page](outputs.md) *(planned)* will
-cover file naming in detail.
+`DeepCorResult` fields; the [outputs page](outputs.md) covers the file naming in
+detail.
 
 ---
 

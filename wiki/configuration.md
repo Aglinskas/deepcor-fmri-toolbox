@@ -70,7 +70,7 @@ defaults if you prefer to start from that.
 > **Version note.** The original `v1` model only reads `latent_dims[0]` and
 > `beta`. All of the other `ModelConfig` fields (`gamma`, `delta`, the
 > `scale_MSE_*` weights, `do_disentangle`) apply to the confound-aware `v2`
-> model. See [model versions](model_versions.md) *(planned)*.
+> model. See [model versions](model_versions.md).
 
 ## `TrainingConfig` — optimizer & loop
 
@@ -109,7 +109,7 @@ defaults if you prefer to start from that.
 > it yourself with
 > [`apply_frame_censoring()` / `censor_and_interpolate()`](https://github.com/Aglinskas/deepcor-fmri-toolbox/blob/main/deepcor/data/preprocessing.py)
 > before handing data to the model (see the
-> [advanced API](usage_advanced_api.md), *planned*).
+> [advanced API](usage_advanced_api.md)).
 
 ## Tuning guidance
 

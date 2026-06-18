@@ -41,7 +41,7 @@ likely to touch:
 
 | Parameter | Default | What it does |
 | --- | --- | --- |
-| `model_version` | `"latest"` | `"v1"`, `"v2"`, or `"latest"`/`"cvae"` (currently → `v2`). See [model versions](model_versions.md) *(planned)*. |
+| `model_version` | `"latest"` | `"v1"`, `"v2"`, or `"latest"`/`"cvae"` (currently → `v2`). See [model versions](model_versions.md). |
 | `latent_dims` | `(8, 8)` | `(signal_dim, noise_dim)` of the latent space. `v1` uses only the first. |
 | `n_epochs` | `100` | Training epochs per ensemble member. |
 | `batch_size` | `1024` | Training batch size. |
@@ -112,8 +112,8 @@ denoiser.save("out/models")   # writes one checkpoint per ensemble member
 | `signal_files` | The per-repetition denoised signal files that were averaged |
 | `tracks` | Per-repetition training-tracking dicts (losses, metrics over epochs) |
 
-A dedicated [Outputs explained](outputs.md) page *(planned)* will go deeper on
-the file naming and how to use each one.
+The [Outputs explained](outputs.md) page goes deeper on the file naming and how
+to use each one.
 
 ## Watching training
 
