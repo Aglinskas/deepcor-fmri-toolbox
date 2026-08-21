@@ -25,3 +25,4 @@ __pycache__/
 !/reanalysis/**/*.py
 !/reanalysis/**/*.md
 !/reanalysis/**/*.sh
+/reanalysis/**/.ipynb_checkpoints/
