@@ -7,3 +7,21 @@ __pycache__/
 *.egg-info/
 **/__marimo__/session/
 **/.DS_Store
+
+# Large data files
+*.nii
+*.nii.gz
+*.npy
+*.npz
+*.h5
+*.mat
+*.pt
+*.pth
+*.csv
+
+# reanalysis/ is a scratch/output dir - keep code & docs, ignore data
+/reanalysis/**
+!/reanalysis/**/
+!/reanalysis/**/*.py
+!/reanalysis/**/*.md
+!/reanalysis/**/*.sh
